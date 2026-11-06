@@ -1,0 +1,650 @@
+/* ========================================================
+   LearnIQ Study Planner (sp- namespace)
+   Same family as Notes (nl-) and Quiz (lq-): white page card,
+   purple gradient banner with the robot, numbered step cards.
+   ======================================================== */
+
+.sp-page {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 28px;
+  background: var(--surface, #ffffff);
+  border-radius: 20px;
+  border: 1px solid var(--border, #e2e8f0);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  color: var(--text, #1c1f33);
+}
+.sp-page h2,
+.sp-page h3,
+.sp-page h4 {
+  margin: 0;
+}
+
+/* Colour helpers: --t = strong tone, --tb = soft background */
+.sp-c-learn { --t: #2563eb; --tb: #e8f0ff; }
+.sp-c-practice { --t: #16a34a; --tb: #e7f8ee; }
+.sp-c-retest { --t: #d97706; --tb: #fff4de; }
+.sp-c-revision { --t: #db2777; --tb: #ffe9f3; }
+.sp-c-custom { --t: #5b3df5; --tb: #eeebff; }
+
+/* ---------- Back link ---------- */
+.sp-back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: -6px;
+  color: var(--primary, #6366f1);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.sp-back:hover { text-decoration: underline; }
+
+/* ---------- Hero banner ---------- */
+.sp-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.75rem 2.25rem;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  border-radius: 20px;
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.25);
+}
+.sp-hero-text { flex: 1; min-width: 220px; }
+.sp-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.sp-hero h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #ffffff;
+}
+.sp-hero p {
+  margin: 6px 0 0;
+  max-width: 480px;
+  font-size: 1rem;
+  color: #f3e8ff;
+}
+.sp-hero-bot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 210px;
+  flex-shrink: 0;
+}
+.sp-bubble {
+  position: relative;
+  padding: 10px 14px;
+  background: #ffffff;
+  color: #1e293b;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(30, 20, 120, 0.2);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  animation: sp-pop 0.35s ease both;
+}
+.sp-bubble::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 14px;
+  height: 14px;
+  background: inherit;
+  transform: translateX(-50%) rotate(45deg);
+  border-radius: 3px;
+}
+.sp-bubble.happy { background: #bbf7d0; }
+.sp-bubble.busy { background: #e9e5ff; }
+.sp-robot {
+  display: flex;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  animation: sp-float 3.5s ease-in-out infinite;
+}
+
+/* ---------- Steps ---------- */
+.sp-form { display: flex; flex-direction: column; gap: 20px; }
+.sp-step {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 1.5rem 1.75rem;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 20px;
+  background: var(--surface, #ffffff);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+.sp-step-head { display: flex; align-items: center; gap: 12px; }
+.sp-step-num {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  background: #6366f1;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 800;
+}
+.sp-step-title { font-size: 1.2rem; font-weight: 800; }
+.sp-help { margin: 0; font-size: 0.85rem; font-weight: 500; color: var(--muted, #64748b); }
+
+/* ---------- Fields ---------- */
+.sp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.sp-field { display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem; font-weight: 600; }
+.sp-field input,
+.sp-field select,
+.sp-field textarea,
+.sp-input {
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 0.7rem 0.9rem;
+  border: 1.5px solid var(--border, #cbd5e1);
+  border-radius: 10px;
+  background: var(--bg, #f8fafc);
+  color: var(--text, #1e293b);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.sp-field input:focus,
+.sp-field select:focus,
+.sp-field textarea:focus,
+.sp-input:focus {
+  outline: 0;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+/* Day-of-week grid */
+.sp-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+.sp-day-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  background: var(--bg, #f8fafc);
+  border: 1.5px solid var(--border, #cbd5e1);
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+.sp-day-box input {
+  width: 100%;
+  min-width: 0;
+  padding: 6px 4px;
+  text-align: center;
+  font: inherit;
+  font-size: 0.9rem;
+  border: 1.5px solid var(--border, #cbd5e1);
+  border-radius: 8px;
+  background: var(--surface, #fff);
+  color: var(--text, #1e293b);
+}
+.sp-day-box.rest { opacity: 0.6; }
+.sp-day-box small { font-size: 0.7rem; font-weight: 600; color: var(--muted, #64748b); }
+
+/* ---------- Topic picker ---------- */
+.sp-topics { display: flex; flex-direction: column; gap: 8px; }
+.sp-topic {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--bg, #f8fafc);
+  border: 1.5px solid var(--border, #cbd5e1);
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.sp-topic.on { background: #eeebff; border-color: #6366f1; }
+.sp-topic input { width: 18px; height: 18px; accent-color: #6366f1; }
+.sp-topic-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.sp-topic-text strong { word-break: break-word; }
+.sp-topic-text small { font-size: 0.78rem; font-weight: 500; color: var(--muted, #64748b); }
+.sp-pct {
+  padding: 3px 10px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.sp-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.sp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 12px;
+  background: #eeebff;
+  color: #4f46e5;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.sp-chip button {
+  display: inline-flex;
+  padding: 2px;
+  border: 0;
+  background: none;
+  color: inherit;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.sp-add-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.sp-add-row .sp-input { flex: 1; min-width: 140px; }
+
+/* ---------- Buttons & messages ---------- */
+.sp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.35);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.15s ease;
+}
+.sp-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(79, 70, 229, 0.45); }
+.sp-btn:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
+.sp-btn.ghost {
+  background: var(--surface, #fff);
+  color: #4f46e5;
+  border: 1.5px solid #c7d2fe;
+  box-shadow: none;
+}
+.sp-btn.ghost:hover:not(:disabled) { background: #f5f3ff; border-color: #6366f1; }
+.sp-btn.danger {
+  background: var(--surface, #fff);
+  color: #b91c1c;
+  border: 1.5px solid #fecaca;
+  box-shadow: none;
+}
+.sp-btn.danger:hover:not(:disabled) { background: #fef2f2; border-color: #ef4444; }
+.sp-btn.small { padding: 7px 12px; font-size: 13px; border-radius: 10px; }
+.sp-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.sp-spin { animation: sp-spin 0.9s linear infinite; }
+
+.sp-error {
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid #ef4444;
+  color: #b91c1c;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+.sp-notice {
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  background: rgba(22, 163, 74, 0.1);
+  border: 1px solid #16a34a;
+  color: #166534;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+.sp-warn {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.55);
+  border-radius: 10px;
+  color: #92400e;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* ---------- Plan overview ---------- */
+.sp-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.sp-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 16px;
+  background: var(--primary-soft, #eeebff);
+  border-radius: 14px;
+}
+.sp-stat strong { font-size: 1.5rem; font-weight: 800; color: #4f46e5; }
+.sp-stat span { font-size: 0.8rem; font-weight: 600; color: var(--muted, #64748b); }
+.sp-bar { height: 12px; background: var(--border, #e2e8f0); border-radius: 999px; overflow: hidden; }
+.sp-bar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #16a34a, #34d399);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+.sp-how {
+  padding: 1rem 1.25rem;
+  background: var(--bg, #f8fafc);
+  border: 1px dashed var(--border, #cbd5e1);
+  border-radius: 14px;
+  font-size: 0.88rem;
+}
+.sp-how summary { font-weight: 800; cursor: pointer; }
+.sp-how ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+
+/* ---------- Days and tasks ---------- */
+.sp-days { display: flex; flex-direction: column; gap: 16px; }
+.sp-day {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 1.1rem 1.25rem;
+  background: var(--surface, #fff);
+  border: 1.5px solid var(--border, #e2e8f0);
+  border-radius: 18px;
+}
+.sp-day.today { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12); }
+.sp-day.past { opacity: 0.85; }
+.sp-day.restday { background: var(--bg, #f8fafc); }
+.sp-day-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.sp-day-head h4 { font-size: 1.05rem; font-weight: 800; }
+.sp-day-head small { font-weight: 600; color: var(--muted, #64748b); }
+.sp-badge {
+  padding: 2px 10px;
+  background: #eeebff;
+  color: #4f46e5;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+}
+.sp-badge.warn { background: #fef3c7; color: #b45309; }
+.sp-rest-text { margin: 0; font-size: 0.88rem; font-weight: 600; color: var(--muted, #64748b); }
+
+.sp-task {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--tb, #eeebff);
+  border-left: 5px solid var(--t, #6366f1);
+  border-radius: 12px;
+}
+.sp-task.done { opacity: 0.7; }
+.sp-task.done .sp-task-title { text-decoration: line-through; }
+.sp-task-main { display: flex; align-items: flex-start; gap: 10px; }
+.sp-task-main input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; accent-color: #16a34a; flex-shrink: 0; }
+.sp-task-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.sp-task-title { font-size: 0.95rem; font-weight: 800; word-break: break-word; }
+.sp-task-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 600; color: var(--muted, #64748b); }
+.sp-reason { margin: 0; font-size: 0.8rem; font-weight: 500; color: var(--muted, #64748b); line-height: 1.4; }
+.sp-prio { padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; }
+.sp-prio.high { background: #fee2e2; color: #b91c1c; }
+.sp-prio.medium { background: #fef3c7; color: #b45309; }
+.sp-prio.low { background: #e0f2fe; color: #0369a1; }
+.sp-task-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.sp-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  background: var(--surface, #fff);
+  color: var(--text, #334155);
+  border: 1.5px solid var(--border, #cbd5e1);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.sp-mini:hover:not(:disabled) { border-color: #6366f1; color: #4f46e5; }
+.sp-mini:disabled { opacity: 0.5; cursor: not-allowed; }
+.sp-mini.go { background: #6366f1; border-color: transparent; color: #fff; }
+.sp-mini.go:hover { color: #fff; filter: brightness(1.1); }
+
+/* Edit box */
+.sp-edit {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  padding: 12px;
+  background: var(--surface, #fff);
+  border: 1.5px dashed #6366f1;
+  border-radius: 12px;
+}
+.sp-edit .sp-field { font-size: 0.8rem; }
+.sp-edit .wide { grid-column: 1 / -1; }
+
+/* ---------- Loading ---------- */
+.sp-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  color: var(--muted, #64748b);
+  font-weight: 600;
+}
+
+/* ---------- Animations ---------- */
+@keyframes sp-spin { to { transform: rotate(360deg); } }
+@keyframes sp-pop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+@keyframes sp-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+/* ---------- Small screens and calm mode ---------- */
+@media (max-width: 768px) {
+  .sp-page { padding: 16px; gap: 18px; }
+  .sp-hero { padding: 1.4rem; }
+  .sp-hero h2 { font-size: 1.5rem; }
+  .sp-hero-bot { width: 100%; }
+  .sp-step { padding: 1.1rem; }
+  .sp-row { grid-template-columns: 1fr; }
+  .sp-week { grid-template-columns: repeat(2, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sp-page *,
+  .sp-page *::before,
+  .sp-page *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+/* ========================================================
+   DARK MODE OVERRIDES: STUDY PLANNER (sp- namespace)
+   ======================================================== */
+html.dark .sp-page,
+[data-theme="dark"] .sp-page {
+  background: #0f172a !important;
+  border-color: #1e293b !important;
+  color: #f8fafc !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+html.dark .sp-step,
+[data-theme="dark"] .sp-step,
+html.dark .sp-day,
+[data-theme="dark"] .sp-day {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark .sp-step-title,
+[data-theme="dark"] .sp-step-title,
+html.dark .sp-day-head h4,
+[data-theme="dark"] .sp-day-head h4 {
+  color: #f8fafc !important;
+}
+
+html.dark .sp-field input,
+html.dark .sp-field select,
+html.dark .sp-field textarea,
+html.dark .sp-input,
+[data-theme="dark"] .sp-input {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark .sp-day-box,
+[data-theme="dark"] .sp-day-box {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark .sp-day-box input,
+[data-theme="dark"] .sp-day-box input {
+  background: #1e293b !important;
+  border-color: #475569 !important;
+  color: #f8fafc !important;
+}
+
+html.dark .sp-topic,
+[data-theme="dark"] .sp-topic {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark .sp-topic.on,
+[data-theme="dark"] .sp-topic.on {
+  background: #1e1b4b !important;
+  border-color: #6366f1 !important;
+}
+
+html.dark .sp-topic-text strong,
+[data-theme="dark"] .sp-topic-text strong {
+  color: #f8fafc !important;
+}
+
+html.dark .sp-topic-text small,
+html.dark .sp-help,
+html.dark .sp-day-head small,
+html.dark .sp-task-meta,
+html.dark .sp-reason,
+[data-theme="dark"] .sp-reason {
+  color: #94a3b8 !important;
+}
+
+/* Task cards in dark mode */
+html.dark .sp-task,
+[data-theme="dark"] .sp-task {
+  background: #172554 !important;
+  color: #f8fafc !important;
+}
+
+html.dark .sp-task-title,
+[data-theme="dark"] .sp-task-title {
+  color: #f8fafc !important;
+}
+
+html.dark .sp-mini,
+[data-theme="dark"] .sp-mini {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+html.dark .sp-mini:hover:not(:disabled),
+[data-theme="dark"] .sp-mini:hover:not(:disabled) {
+  border-color: #6366f1 !important;
+  color: #818cf8 !important;
+  background: #0f172a !important;
+}
+
+html.dark .sp-how,
+[data-theme="dark"] .sp-how {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+html.dark .sp-bubble,
+[data-theme="dark"] .sp-bubble {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
+}
+/* Fix unreadable text in Planner Guide banner */
+html.dark .sp-how,
+[data-theme="dark"] .sp-how {
+  background: #111827 !important;
+  border: 1.5px solid #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark .sp-how summary,
+[data-theme="dark"] .sp-how summary {
+  color: #f8fafc !important;
+}
+
+html.dark .sp-how li,
+[data-theme="dark"] .sp-how li {
+  color: #cbd5e1 !important;
+}
+/* ========================================================
+   FIX: "How your study plan works" BANNER IN DARK MODE
+   ======================================================== */
+
+/* Target the info/guide banner container directly */
+html.dark .sp-page > div[style*="background"],
+html.dark .sp-page div:has(> button[aria-label*="close" i]),
+html.dark .sp-page div:has(> svg + span),
+html.dark div[class*="guide"],
+html.dark div[class*="info-banner"],
+html.dark div[class*="explainer"],
+[data-theme="dark"] .sp-page > div[style*="background"] {
+  background-color: #111827 !important;
+  background: #111827 !important;
+  border: 1px solid #334155 !important;
+  color: #f8fafc !important;
+}
+
+/* Force all text, strong tags, spans, and icons inside that banner to be visible */
+html.dark .sp-page > div:has(button) span,
+html.dark .sp-page > div:has(button) p,
+html.dark .sp-page > div:has(button) strong,
+html.dark .sp-page > div:has(button) div,
+html.dark .sp-page > div:has(button) {
+  color: #cbd5e1 !important;
+}
+
+html.dark .sp-page > div:has(button) strong,
+html.dark .sp-page > div:has(button) b,
+html.dark .sp-page > div:has(button) h4 {
+  color: #f8fafc !important;
+}
+
+/* Close button 'X' inside the banner */
+html.dark .sp-page > div:has(button) button {
+  color: #94a3b8 !important;
+}
+html.dark .sp-page > div:has(button) button:hover {
+  color: #f8fafc !important;
+}

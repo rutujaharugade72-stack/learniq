@@ -1,0 +1,619 @@
+/* ========================================================
+   LearnIQ Quiz Arena Styles (lq- namespace)
+   ======================================================== */
+
+.lq-card {
+  padding: 28px;
+  background: var(--surface, #ffffff);
+  border-radius: 20px;
+  border: 1px solid var(--border, #e2e8f0);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  color: var(--text, #1c1f33);
+}
+
+.lq-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--primary, #6366f1);
+  font: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+}
+.lq-back:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Setup Hero Banner ---------- */
+.lq-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  padding: 2rem 2.25rem;
+  border-radius: 20px;
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.25);
+}
+.lq-hero h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.5px;
+  color: #ffffff;
+}
+.lq-hero p {
+  margin: 6px 0 0;
+  opacity: 0.9;
+  font-size: 1rem;
+  color: #f3e8ff;
+}
+.lq-hero-art {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 14px;
+  border-radius: 16px;
+  display: flex;
+  animation: lq-float 3.5s ease-in-out infinite;
+}
+
+/* ---------- Sections & Cards ---------- */
+.lq-section {
+  margin-bottom: 20px;
+  padding: 1.75rem;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 20px;
+  background: var(--surface, #ffffff);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+.lq-section-title {
+  margin: 0 0 1.25rem;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #1e293b;
+}
+
+/* ---------- Tabs ---------- */
+.lq-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+.lq-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.65rem 1.25rem;
+  border: 1.5px solid var(--border, #cbd5e1);
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #475569;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.lq-tab:hover:not(.disabled):not(.active) {
+  border-color: #6366f1;
+  color: #4f46e5;
+  background: #f5f3ff;
+}
+.lq-tab.active {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+.lq-tab.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Forms & Inputs ---------- */
+.lq-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.lq-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.lq-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+}
+.lq-field input,
+.lq-field select,
+.lq-field textarea {
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #1e293b;
+  resize: vertical;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.lq-field input:focus,
+.lq-field select:focus,
+.lq-field textarea:focus {
+  outline: 0;
+  border-color: #6366f1;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+/* ---------- PDF Upload Section ---------- */
+.lq-upload {
+  border: 2px dashed #cbd5e1;
+  padding: 2rem;
+  border-radius: 14px;
+  text-align: center;
+  background: #f8fafc;
+}
+.lq-select-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+.lq-select-row p {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+}
+.lq-link-btn {
+  border: 0;
+  background: none;
+  color: #4f46e5;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.lq-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+  text-align: left;
+  padding: 0.5rem;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+.lq-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #334155;
+  cursor: pointer;
+}
+.lq-check input {
+  width: 17px;
+  height: 17px;
+  accent-color: #6366f1;
+}
+
+.lq-error {
+  padding: 1rem;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid #ef4444;
+  color: #b91c1c;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* ---------- Game & Action Buttons ---------- */
+.lq-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: #fff;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.35);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.15s ease;
+  text-decoration: none;
+}
+.lq-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.45);
+}
+.lq-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.lq-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.lq-spin {
+  animation: lq-spin 0.9s linear infinite;
+}
+
+/* ---------- Options / Question Cards ---------- */
+.lq-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+.lq-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  text-align: left;
+  padding: 1rem 1.25rem;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #334155;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.lq-option:hover:not(:disabled) {
+  border-color: #6366f1;
+  background: #f5f3ff;
+  color: #4f46e5;
+  transform: translateY(-1px);
+}
+.lq-option:disabled {
+  cursor: default;
+}
+.lq-option.correct {
+  background: #dcfce7 !important;
+  border-color: #16a34a !important;
+  color: #166534 !important;
+}
+.lq-option.wrong {
+  background: #fee2e2 !important;
+  border-color: #dc2626 !important;
+  color: #991b1b !important;
+}
+
+/* ---------- Mascot & Feedback ---------- */
+.lq-mascot-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 8px 0 14px;
+}
+.lq-mascot {
+  flex: none;
+  animation: lq-float 3.5s ease-in-out infinite;
+}
+.lq-mascot.happy { animation: lq-hop 0.7s ease; }
+.lq-mascot.sad { animation: lq-shake 0.5s ease; }
+
+.lq-bubble {
+  padding: 10px 16px;
+  border-radius: 16px;
+  background: var(--primary-soft, #eeebff);
+  color: var(--text, #1c1f33);
+  font-weight: 700;
+  font-size: 14px;
+  animation: lq-pop 0.3s ease;
+}
+
+/* ---------- Keyframe Animations ---------- */
+@keyframes lq-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes lq-hop {
+  0% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-14px) scale(1.05); }
+  60% { transform: translateY(0) scale(0.98); }
+  100% { transform: translateY(0) scale(1); }
+}
+@keyframes lq-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-4px); }
+}
+@keyframes lq-pop {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes lq-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .lq-row { grid-template-columns: 1fr; }
+  .lq-card { padding: 18px; }
+  .lq-hero { padding: 1.5rem; }
+  .lq-hero h2 { font-size: 1.5rem; }
+}
+
+/* ========================================================
+   DARK MODE OVERRIDES: QUIZ ARENA (lq- namespace)
+   ======================================================== */
+html.dark .lq-card,
+[data-theme="dark"] .lq-card {
+  background: #0f172a !important;
+  border-color: #1e293b !important;
+  color: #f8fafc !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+html.dark .lq-section,
+[data-theme="dark"] .lq-section {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark .lq-section-title,
+[data-theme="dark"] .lq-section-title {
+  color: #f8fafc !important;
+}
+
+html.dark .lq-tab,
+[data-theme="dark"] .lq-tab {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+html.dark .lq-tab:hover:not(.disabled):not(.active),
+[data-theme="dark"] .lq-tab:hover:not(.disabled):not(.active) {
+  background: #1e1b4b !important;
+  border-color: #6366f1 !important;
+  color: #a5b4fc !important;
+}
+html.dark .lq-tab.active,
+[data-theme="dark"] .lq-tab.active {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+}
+
+html.dark .lq-field,
+[data-theme="dark"] .lq-field {
+  color: #cbd5e1 !important;
+}
+html.dark .lq-field input,
+html.dark .lq-field select,
+html.dark .lq-field textarea,
+[data-theme="dark"] .lq-field input,
+[data-theme="dark"] .lq-field select,
+[data-theme="dark"] .lq-field textarea {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+html.dark .lq-field input:focus,
+html.dark .lq-field select:focus,
+html.dark .lq-field textarea:focus,
+[data-theme="dark"] .lq-field input:focus,
+[data-theme="dark"] .lq-field select:focus,
+[data-theme="dark"] .lq-field textarea:focus {
+  background: #0f172a !important;
+  border-color: #6366f1 !important;
+}
+
+html.dark .lq-upload,
+[data-theme="dark"] .lq-upload {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+html.dark .lq-select-row p,
+[data-theme="dark"] .lq-select-row p {
+  color: #cbd5e1 !important;
+}
+html.dark .lq-checks,
+[data-theme="dark"] .lq-checks {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+html.dark .lq-check,
+[data-theme="dark"] .lq-check {
+  color: #e2e8f0 !important;
+}
+
+html.dark .lq-option,
+[data-theme="dark"] .lq-option {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+html.dark .lq-option:hover:not(:disabled),
+[data-theme="dark"] .lq-option:hover:not(:disabled) {
+  background: #1e1b4b !important;
+  border-color: #6366f1 !important;
+  color: #ffffff !important;
+}
+
+html.dark .lq-bubble,
+[data-theme="dark"] .lq-bubble {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155 !important;
+}
+
+html.dark .lq-question-box,
+[data-theme="dark"] .lq-question-box,
+html.dark .lq-exam-main,
+[data-theme="dark"] .lq-exam-main,
+html.dark .lq-confirm-box,
+[data-theme="dark"] .lq-confirm-box {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark .lq-question-text,
+[data-theme="dark"] .lq-question-text {
+  color: #f8fafc !important;
+}
+
+html.dark .lq-exam-nav,
+[data-theme="dark"] .lq-exam-nav,
+html.dark .lq-report-box,
+[data-theme="dark"] .lq-report-box {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html.dark .lq-nav-dot,
+[data-theme="dark"] .lq-nav-dot {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+html.dark .lq-nav-dot.answered,
+[data-theme="dark"] .lq-nav-dot.answered {
+  background: rgba(16, 185, 129, 0.25) !important;
+  border-color: #10b981 !important;
+  color: #6ee7b7 !important;
+}
+
+html.dark .lq-score-banner,
+[data-theme="dark"] .lq-score-banner {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html.dark .lq-review-item,
+[data-theme="dark"] .lq-review-item {
+  background: #0f172a !important;
+}
+html.dark .lq-review-item.correct,
+[data-theme="dark"] .lq-review-item.correct {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border-color: #059669 !important;
+}
+html.dark .lq-review-item.wrong,
+[data-theme="dark"] .lq-review-item.wrong {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border-color: #dc2626 !important;
+}
+
+html.dark .lq-hint-box,
+[data-theme="dark"] .lq-hint-box {
+  background: rgba(245, 158, 11, 0.15) !important;
+  border-color: rgba(245, 158, 11, 0.4) !important;
+  color: #fde68a !important;
+}
+/* ========================================================
+   SAVED QUIZZES HISTORY (History.jsx)
+   ======================================================== */
+
+.lq-history {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 1rem;
+}
+
+.lq-history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #f8fafc;
+  border: 1.5px solid var(--border, #cbd5e1);
+  border-radius: 14px;
+  transition: all 0.15s ease;
+}
+
+.lq-history-item:hover {
+  border-color: #6366f1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.08);
+}
+
+.lq-history-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.lq-history-info strong {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text, #1e293b);
+  word-break: break-word;
+}
+
+.lq-history-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted, #64748b);
+}
+
+.lq-btn.auto.small {
+  padding: 8px 16px;
+  font-size: 13px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+/* History Dark Mode Overrides */
+html.dark .lq-history-item,
+[data-theme="dark"] .lq-history-item {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html.dark .lq-history-item:hover,
+[data-theme="dark"] .lq-history-item:hover {
+  background: #1e1b4b !important;
+  border-color: #6366f1 !important;
+}
+
+html.dark .lq-history-info strong,
+[data-theme="dark"] .lq-history-info strong {
+  color: #f8fafc !important;
+}
+
+html.dark .lq-history-meta,
+[data-theme="dark"] .lq-history-meta {
+  color: #94a3b8 !important;
+}
+
+html.dark .lq-note,
+[data-theme="dark"] .lq-note {
+  color: #94a3b8 !important;
+}

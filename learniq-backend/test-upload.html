@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test PDF Upload</title></head>
+<body>
+  <h2>Test: Upload PDF through Node → Python</h2>
+  <form action="http://localhost:5000/api/pdf/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" accept="application/pdf" required>
+    <button type="submit">Upload</button>
+  </form>
+</body>
+</html>

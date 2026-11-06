@@ -1,0 +1,101 @@
+student_id,topic,num_attempts,accuracy,avg_time_taken,avg_hints_used,accuracy_trend,hard_accuracy
+S001,Recursion,3,1.0,51.3,0.0,0.0,1.0
+S001,Machine Learning,5,0.0,48.0,0.0,0.0,0.0
+S001,Data Structures,4,0.25,29.0,1.0,0.5,0.0
+S001,Python Basics,4,0.5,31.0,0.5,0.0,-1.0
+S001,Decision Trees,4,0.5,48.2,0.0,0.0,0.5
+S002,Recursion,5,0.4,22.0,0.6,-0.167,-1.0
+S002,Machine Learning,5,0.6,75.0,1.6,0.167,0.6
+S002,Data Structures,3,0.0,51.3,1.33,0.0,0.0
+S002,Python Basics,6,0.667,40.2,0.67,-0.667,0.0
+S002,Decision Trees,4,0.25,33.0,1.0,0.5,-1.0
+S003,Recursion,3,0.0,25.3,0.0,0.0,-1.0
+S003,Machine Learning,5,0.2,60.8,0.4,-0.5,0.333
+S003,Data Structures,4,0.0,55.0,0.5,0.0,0.0
+S003,Python Basics,4,0.5,49.0,0.0,0.0,0.0
+S003,Decision Trees,4,0.5,50.0,0.5,-1.0,0.5
+S004,Recursion,4,0.75,45.0,0.75,-0.5,1.0
+S004,Machine Learning,5,0.4,38.2,0.4,-0.167,0.0
+S004,Data Structures,6,0.333,45.0,1.17,0.0,0.667
+S004,Python Basics,5,1.0,57.6,0.4,0.0,1.0
+S004,Decision Trees,6,0.167,43.8,1.0,0.333,0.333
+S005,Recursion,5,0.8,26.4,0.0,0.5,-1.0
+S005,Machine Learning,6,0.333,54.0,0.17,0.0,0.0
+S005,Data Structures,5,0.2,38.8,1.4,0.333,0.0
+S005,Python Basics,4,0.0,39.2,1.0,0.0,0.0
+S005,Decision Trees,6,0.833,47.0,0.33,0.333,0.667
+S006,Recursion,5,0.4,34.8,0.8,0.667,0.0
+S006,Machine Learning,6,0.167,50.3,0.67,0.333,0.0
+S006,Data Structures,5,0.6,51.6,0.6,0.167,0.0
+S006,Python Basics,4,1.0,38.8,0.0,0.0,1.0
+S006,Decision Trees,3,0.333,41.3,0.33,-1.0,0.5
+S007,Recursion,6,0.833,46.5,0.33,-0.333,1.0
+S007,Machine Learning,6,0.667,30.5,0.33,0.0,0.0
+S007,Data Structures,5,0.2,53.8,1.2,0.333,0.0
+S007,Python Basics,5,0.8,53.0,0.0,-0.333,1.0
+S007,Decision Trees,5,0.2,32.4,1.0,-0.5,0.0
+S008,Recursion,4,0.5,39.2,1.0,0.0,0.0
+S008,Machine Learning,6,0.667,47.3,0.33,0.0,0.5
+S008,Data Structures,5,0.6,45.6,0.2,1.0,0.333
+S008,Python Basics,3,1.0,56.7,0.67,0.0,1.0
+S008,Decision Trees,6,0.333,55.7,0.5,0.0,0.333
+S009,Recursion,4,0.75,33.8,0.5,0.5,-1.0
+S009,Machine Learning,6,0.167,28.3,0.83,0.333,0.0
+S009,Data Structures,3,0.0,14.0,1.33,0.0,-1.0
+S009,Python Basics,3,0.333,31.0,0.33,0.5,0.0
+S009,Decision Trees,3,0.0,33.7,0.67,0.0,0.0
+S010,Recursion,3,0.333,34.3,1.0,0.5,0.0
+S010,Machine Learning,5,0.0,32.6,0.4,0.0,0.0
+S010,Data Structures,6,0.333,34.7,0.83,0.0,1.0
+S010,Python Basics,3,0.333,63.0,0.67,-1.0,0.333
+S010,Decision Trees,5,0.0,44.8,0.8,0.0,0.0
+S011,Recursion,3,0.667,36.0,0.67,-0.5,0.5
+S011,Machine Learning,6,0.167,70.2,0.17,-0.333,0.25
+S011,Data Structures,5,0.2,38.0,0.8,0.333,0.0
+S011,Python Basics,4,0.5,40.8,0.25,1.0,0.0
+S011,Decision Trees,6,0.5,60.3,0.67,0.333,0.25
+S012,Recursion,3,0.667,56.0,0.0,1.0,0.5
+S012,Machine Learning,6,0.167,48.2,1.0,0.333,0.0
+S012,Data Structures,3,0.333,72.3,1.33,-1.0,0.333
+S012,Python Basics,5,0.0,58.4,1.4,0.0,0.0
+S012,Decision Trees,4,0.25,35.8,0.75,-0.5,0.0
+S013,Recursion,6,0.833,39.2,0.17,0.333,0.5
+S013,Machine Learning,5,0.8,32.8,0.2,-0.333,-1.0
+S013,Data Structures,5,0.6,36.6,1.2,-0.667,0.667
+S013,Python Basics,3,0.333,47.0,0.67,-1.0,0.0
+S013,Decision Trees,5,0.8,35.2,0.2,0.5,-1.0
+S014,Recursion,5,0.4,29.8,0.8,0.667,-1.0
+S014,Machine Learning,5,0.2,30.2,0.4,-0.5,0.0
+S014,Data Structures,3,0.333,42.0,0.67,0.5,0.0
+S014,Python Basics,5,0.0,37.4,0.2,0.0,0.0
+S014,Decision Trees,3,0.0,58.0,0.67,0.0,0.0
+S015,Recursion,4,0.25,25.0,0.5,0.5,0.0
+S015,Machine Learning,3,0.667,27.3,0.33,1.0,-1.0
+S015,Data Structures,4,0.75,52.0,0.0,-0.5,0.5
+S015,Python Basics,3,0.333,30.0,1.33,0.5,0.0
+S015,Decision Trees,5,0.6,29.8,0.2,0.167,1.0
+S016,Recursion,5,0.4,28.0,1.6,-0.167,-1.0
+S016,Machine Learning,6,0.667,32.3,1.0,0.0,0.0
+S016,Data Structures,6,0.5,33.8,0.5,0.333,0.0
+S016,Python Basics,5,0.0,35.2,1.4,0.0,0.0
+S016,Decision Trees,6,0.167,38.2,1.33,-0.333,0.0
+S017,Recursion,6,0.667,33.3,0.5,-0.667,1.0
+S017,Machine Learning,5,0.0,58.4,0.6,0.0,0.0
+S017,Data Structures,6,0.0,49.0,0.67,0.0,0.0
+S017,Python Basics,5,0.4,42.0,0.6,-0.167,0.0
+S017,Decision Trees,5,0.4,37.6,0.6,-0.167,-1.0
+S018,Recursion,5,0.0,32.6,1.4,0.0,0.0
+S018,Machine Learning,3,0.667,65.0,0.0,1.0,0.667
+S018,Data Structures,6,0.5,34.2,0.5,0.333,0.0
+S018,Python Basics,6,0.0,54.7,0.67,0.0,0.0
+S018,Decision Trees,3,0.333,47.7,1.0,0.5,0.0
+S019,Recursion,4,0.0,63.0,1.0,0.0,0.0
+S019,Machine Learning,5,0.4,41.4,1.0,-1.0,0.0
+S019,Data Structures,4,1.0,31.0,0.75,0.0,1.0
+S019,Python Basics,4,0.0,28.5,0.5,0.0,0.0
+S019,Decision Trees,6,0.167,42.8,0.5,0.333,0.0
+S020,Recursion,5,0.2,19.6,0.0,-0.5,-1.0
+S020,Machine Learning,3,1.0,17.7,0.0,0.0,-1.0
+S020,Data Structures,3,0.333,43.3,1.0,0.5,0.0
+S020,Python Basics,5,0.4,41.6,0.2,-0.167,0.0
+S020,Decision Trees,3,0.333,40.7,0.33,-1.0,0.0

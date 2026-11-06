@@ -1,0 +1,299 @@
+/* ---- Notes: comparison tables and charts (same Study Lab look) ---- */
+
+.nl-tables,
+.nl-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.nl-table-card,
+.nl-chart-card {
+  padding: 1.1rem 1.1rem 1rem;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-top: 4px solid var(--t, #6366f1);
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  animation: nl-card-in 0.4s ease backwards;
+}
+.nl-table-title {
+  margin: 0 0 12px;
+  font-size: 1.02rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #1e293b;
+}
+
+/* Tables */
+.nl-table-scroll {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+.nl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+.nl-table th {
+  padding: 10px 12px;
+  background: var(--t, #6366f1);
+  color: #ffffff;
+  font-weight: 800;
+  text-align: left;
+  white-space: nowrap;
+}
+.nl-table td {
+  padding: 9px 12px;
+  color: #334155;
+  vertical-align: top;
+  border-top: 1px solid #e2e8f0;
+  min-width: 110px;
+}
+.nl-table td:first-child {
+  font-weight: 800;
+  color: #1e293b;
+  background: var(--tb, #eeebff);
+}
+.nl-table tbody tr:nth-child(even) td:not(:first-child) {
+  background: #f8fafc;
+}
+
+/* Bar charts */
+.nl-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.nl-bar-row {
+  display: grid;
+  grid-template-columns: minmax(70px, 28%) 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+.nl-bar-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #334155;
+}
+.nl-bar-track {
+  height: 16px;
+  background: var(--tb, #eeebff);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.nl-bar-fill {
+  height: 100%;
+  background: var(--t, #6366f1);
+  border-radius: 999px;
+  transform-origin: left center;
+  animation: nl-grow 0.7s cubic-bezier(0.34, 1.2, 0.64, 1) backwards;
+}
+.nl-bar-value {
+  min-width: 44px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-align: right;
+  color: #1e293b;
+}
+
+@keyframes nl-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@media (max-width: 768px) {
+  .nl-tables,
+  .nl-charts { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nl-table-card,
+  .nl-chart-card,
+  .nl-bar-fill { animation: none !important; }
+}
+
+/* ---- Dark mode (same palette and selectors as notes.css) ---- */
+html.dark .nl-table-card,
+html.dark .nl-chart-card,
+[data-theme="dark"] .nl-table-card,
+[data-theme="dark"] .nl-chart-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  border-top-color: var(--t, #818cf8) !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35) !important;
+}
+
+html.dark .nl-table-title,
+[data-theme="dark"] .nl-table-title {
+  color: #f8fafc !important;
+}
+
+html.dark .nl-table-scroll,
+[data-theme="dark"] .nl-table-scroll {
+  border-color: #334155 !important;
+}
+
+html.dark .nl-table td,
+[data-theme="dark"] .nl-table td {
+  background: #0f172a !important;
+  color: #cbd5e1 !important;
+  border-color: #334155 !important;
+}
+
+html.dark .nl-table td:first-child,
+[data-theme="dark"] .nl-table td:first-child {
+  background: #1e1b4b !important;
+  color: #f8fafc !important;
+}
+
+html.dark .nl-table tbody tr:nth-child(even) td:not(:first-child),
+[data-theme="dark"] .nl-table tbody tr:nth-child(even) td:not(:first-child) {
+  background: #162032 !important;
+}
+
+html.dark .nl-bar-label,
+[data-theme="dark"] .nl-bar-label {
+  color: #e2e8f0 !important;
+}
+
+html.dark .nl-bar-track,
+[data-theme="dark"] .nl-bar-track {
+  background: #0f172a !important;
+}
+
+html.dark .nl-bar-value,
+[data-theme="dark"] .nl-bar-value {
+  color: #f8fafc !important;
+}
+
+/* ---- Dark mode: Quick revision box (it stayed white, which hid its title) ----
+   The extra class names make these rules win over the global
+   "html.dark span" text colour in styles.css. */
+html.dark .nl-page .nl-revision,
+[data-theme="dark"] .nl-page .nl-revision {
+  background: #1e1b4b !important;
+  border-color: #818cf8 !important;
+}
+
+html.dark .nl-page .nl-revision .nl-rev-head span.nl-rev-count,
+[data-theme="dark"] .nl-page .nl-revision .nl-rev-head span.nl-rev-count {
+  background: #312e81 !important;
+  color: #e0e7ff !important;
+}
+
+html.dark .nl-page .nl-revision .nl-rev-list .nl-rev-item,
+[data-theme="dark"] .nl-page .nl-revision .nl-rev-list .nl-rev-item {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html.dark .nl-page .nl-revision .nl-rev-list .nl-rev-item span.nl-rev-text,
+[data-theme="dark"] .nl-page .nl-revision .nl-rev-list .nl-rev-item span.nl-rev-text {
+  color: #e2e8f0 !important;
+}
+
+html.dark .nl-page .nl-revision .nl-rev-list .nl-rev-item span.nl-rev-box,
+[data-theme="dark"] .nl-page .nl-revision .nl-rev-list .nl-rev-item span.nl-rev-box {
+  background: #0f172a !important;
+  border-color: #64748b !important;
+}
+
+html.dark .nl-page .nl-revision .nl-rev-list .nl-rev-item.done,
+[data-theme="dark"] .nl-page .nl-revision .nl-rev-list .nl-rev-item.done {
+  background: #052e1c !important;
+  border-color: #16a34a !important;
+}
+
+html.dark .nl-page .nl-revision .nl-rev-list .nl-rev-item.done span.nl-rev-text,
+[data-theme="dark"] .nl-page .nl-revision .nl-rev-list .nl-rev-item.done span.nl-rev-text {
+  color: #86efac !important;
+}
+
+html.dark .nl-page .nl-revision .nl-rev-list .nl-rev-item.done span.nl-rev-box,
+[data-theme="dark"] .nl-page .nl-revision .nl-rev-list .nl-rev-item.done span.nl-rev-box {
+  background: #16a34a !important;
+  border-color: #16a34a !important;
+}
+
+/* ---- Dark mode: "My notes" list, empty state, loading card, section chips ---- */
+html.dark .nl-page .nl-item .nl-item-main,
+[data-theme="dark"] .nl-page .nl-item .nl-item-main {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+  border-top-color: #334155 !important;
+  border-right-color: #334155 !important;
+  border-bottom-color: #334155 !important;
+}
+
+html.dark .nl-page .nl-item .nl-item-main:hover,
+[data-theme="dark"] .nl-page .nl-item .nl-item-main:hover {
+  background: #1e1b4b !important;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+html.dark .nl-page .nl-item .nl-item-text strong,
+[data-theme="dark"] .nl-page .nl-item .nl-item-text strong {
+  color: #f8fafc !important;
+}
+
+html.dark .nl-page .nl-item .nl-item-text small,
+[data-theme="dark"] .nl-page .nl-item .nl-item-text small {
+  color: #94a3b8 !important;
+}
+
+html.dark .nl-page .nl-item .nl-item-icon,
+[data-theme="dark"] .nl-page .nl-item .nl-item-icon {
+  background: #0f172a !important;
+}
+
+html.dark .nl-page .nl-item .nl-delete,
+[data-theme="dark"] .nl-page .nl-item .nl-delete {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+html.dark .nl-page .nl-item .nl-delete:hover,
+[data-theme="dark"] .nl-page .nl-item .nl-delete:hover {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: #ef4444 !important;
+  color: #f87171 !important;
+}
+
+html.dark .nl-page .nl-empty,
+[data-theme="dark"] .nl-page .nl-empty {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+html.dark .nl-page .nl-loading,
+[data-theme="dark"] .nl-page .nl-loading {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html.dark .nl-page .nl-sec-chips,
+[data-theme="dark"] .nl-page .nl-sec-chips {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+}
+
+html.dark .nl-page .nl-sec-chip,
+[data-theme="dark"] .nl-page .nl-sec-chip {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+html.dark .nl-page .nl-sec-chip.on,
+[data-theme="dark"] .nl-page .nl-sec-chip.on {
+  background: #1e1b4b !important;
+  border-color: #818cf8 !important;
+  color: #e0e7ff !important;
+}

@@ -1,0 +1,1760 @@
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import {
+  ArrowLeft,
+  GraduationCap,
+  FileText,
+  Upload,
+  Sparkles,
+  Flame,
+  Check,
+  X,
+  RotateCcw,
+  Repeat,
+  Loader2,
+  Flag,
+  Lightbulb,
+  Clock,
+  Bookmark,
+  ChevronLeft,
+  ChevronRight,
+  ClipboardCheck,
+  History as HistoryIcon,
+  Gamepad2,
+  Library,
+} from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { useReportActivity } from "../context/AssistantContext";
+import { logActivity } from "../logActivity";
+import Robot from "../components/Robot";
+import History from "./History";
+import "../quiz.css";
+
+const BOARDS = [
+  "CBSE",
+  "ICSE",
+  "State Board",
+  "MSBTE (Diploma)",
+  "University / Engineering",
+  "Other",
+];
+
+const QUESTION_TYPES = [
+  "Mixed",
+  "Conceptual",
+  "Numerical",
+  "Output prediction",
+  "Application",
+  "Exam-style",
+  "Fill in the blanks",
+  "True/False",
+  "Match the column",
+];
+
+const TABS = [
+  { id: "syllabus", label: "Syllabus", Icon: GraduationCap },
+  { id: "paragraph", label: "Paragraph", Icon: FileText },
+  { id: "pdf", label: "Upload PDF", Icon: Upload },
+  { id: "shelf", label: "Study Shelf", Icon: Library },
+];
+
+const REPORT_REASONS = [
+  { value: "wrong_answer", label: "Wrong answer" },
+  { value: "unclear_question", label: "Unclear question" },
+  { value: "bad_explanation", label: "Bad explanation" },
+  { value: "other", label: "Other" },
+];
+
+const MAX_QUESTIONS = 25;
+
+const HAPPY = ["Nice one!", "You nailed it!", "Brilliant!", "Yes, keep going!", "Boom! Correct!"];
+const SAD = [
+  "Oops, close one!",
+  "No worries, that is how we learn.",
+  "Shake it off, the next one is yours!",
+  "Good try! Read the explanation.",
+];
+const IDLE = [
+  "Take your time, you have got this!",
+  "Think it through...",
+  "Which one feels right?",
+  "Read carefully!",
+];
+
+function pick(list, n) {
+  return list[n % list.length];
+}
+
+function shuffle(list) {
+  const arr = [...list];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function shuffleDifferent(list) {
+  if (list.length < 2) return [...list];
+  for (let tries = 0; tries < 10; tries++) {
+    const arr = shuffle(list);
+    if (arr.some((item, i) => item !== list[i])) return arr;
+  }
+  return [...list.slice(1), list[0]];
+}
+
+function trailingStreak(answers) {
+  let count = 0;
+  for (let i = answers.length - 1; i >= 0; i--) {
+    if (!answers[i].isCorrect) break;
+    count++;
+  }
+  return count;
+}
+
+function formatClock(totalSeconds) {
+  const s = Math.max(0, totalSeconds);
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
+}
+
+function clip(text, max) {
+  const t = String(text ?? "");
+  return t.length > max ? `${t.slice(0, max)}...` : t;
+}
+
+function buildActivity({
+  stage,
+  view,
+  quizMode,
+  mcqs,
+  currentIndex,
+  selected,
+  answers,
+  score,
+  examAnswers,
+  quizTopic,
+}) {
+  if (stage === "setup") {
+    return {
+      page: "Quiz setup",
+      summary: view === "history" ? "Looking at my saved quizzes" : "Setting up a new quiz",
+      details: {},
+    };
+  }
+
+  if (stage === "result") {
+    const total = mcqs.length;
+    const percent = total > 0 ? Math.round((score / total) * 100) : 0;
+
+    const bySub = {};
+    answers.forEach((a) => {
+      if (!bySub[a.subtopic]) bySub[a.subtopic] = { right: 0, total: 0 };
+      bySub[a.subtopic].total += 1;
+      if (a.isCorrect) bySub[a.subtopic].right += 1;
+    });
+    const weakSubtopics = Object.entries(bySub)
+      .filter(([, v]) => v.right / v.total < 0.5)
+      .map(([name]) => clip(name, 40))
+      .slice(0, 5);
+
+    const wrongQuestions = answers
+      .filter((a) => !a.isCorrect)
+      .slice(0, 4)
+      .map((a) => ({
+        question: clip(a.question, 150),
+        yourAnswer: clip(a.selected || "not answered", 60),
+        correctAnswer: clip(a.correct, 60),
+      }));
+
+    return {
+      page: "Quiz result",
+      summary: `Finished a quiz on ${clip(quizTopic, 60)}: ${score}/${total} (${percent}%)`,
+      details: {
+        topic: clip(quizTopic, 60),
+        score,
+        total,
+        percent,
+        weakSubtopics,
+        wrongQuestions,
+      },
+    };
+  }
+
+  const q = mcqs[currentIndex];
+  if (!q) {
+    return { page: "Quiz", summary: "Starting a quiz", details: { answered: false } };
+  }
+
+  const number = `${currentIndex + 1} of ${mcqs.length}`;
+  const base = {
+    questionNumber: currentIndex + 1,
+    totalQuestions: mcqs.length,
+    subtopic: clip(q.subtopic || quizTopic, 60),
+    question: clip(q.question, 600),
+    options: q.options.map((o) => clip(o, 70)),
+  };
+
+  if (quizMode === "exam") {
+    return {
+      page: "Quiz",
+      summary: `Taking an exam, question ${number} (${Object.keys(examAnswers).length} answered)`,
+      details: { ...base, answered: false, examMode: true },
+    };
+  }
+
+  const answered = selected !== null;
+  if (!answered) {
+    return {
+      page: "Quiz",
+      summary: `On question ${number}, not answered yet. Subtopic: ${clip(
+        q.subtopic || quizTopic,
+        60
+      )}`,
+      details: { ...base, answered: false },
+    };
+  }
+
+  const wasCorrect = selected === q.correct_answer;
+  return {
+    page: "Quiz",
+    summary: `Answered question ${number}: ${wasCorrect ? "correct" : "wrong"}. Subtopic: ${clip(
+      q.subtopic || quizTopic,
+      60
+    )}`,
+    details: {
+      ...base,
+      answered: true,
+      studentAnswer: clip(selected, 70),
+      correctAnswer: clip(q.correct_answer, 70),
+      wasCorrect,
+      explanation: clip(q.explanation, 250),
+    },
+  };
+}
+
+function Mascot({ mood, message, animKey, size = 90 }) {
+  return (
+    <div className="lq-mascot-row">
+      <div className={`lq-mascot ${mood}`} key={`${mood}-${animKey}`}>
+        <Robot size={size} />
+      </div>
+      <div className={`lq-bubble ${mood}`} key={message}>
+        {message}
+      </div>
+    </div>
+  );
+}
+
+function SourceNote({ heading, quote }) {
+  if (!heading && !quote) return null;
+  return (
+    <div
+      style={{
+        margin: "0.5rem 0 1rem",
+        padding: "0.75rem 1rem",
+        borderRadius: "10px",
+        background: "rgba(99, 102, 241, 0.10)",
+        border: "1px dashed #6366f1",
+        fontSize: "0.88rem",
+        lineHeight: 1.5,
+        color: "var(--text, #334155)",
+      }}
+    >
+      <div style={{ fontWeight: 800, color: "#4f46e5" }}>
+        {"\u{1F4CD}"} From your material{heading ? ": " + heading : ""}
+      </div>
+      {quote && <div style={{ fontStyle: "italic", marginTop: "0.25rem" }}>&ldquo;{quote}&rdquo;</div>}
+    </div>
+  );
+}
+
+export default function Quiz() {
+  const { token } = useAuth();
+  const location = useLocation();
+
+  const [view, setView] = useState("new");
+  const [inputMode, setInputMode] = useState("syllabus");
+  const [stage, setStage] = useState("setup");
+  const [difficulty, setDifficulty] = useState("Medium");
+  const [numQuestions, setNumQuestions] = useState("5");
+  const [questionType, setQuestionType] = useState("Mixed");
+  const [explanationStyle, setExplanationStyle] = useState("Short");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const [mode, setMode] = useState("practice");
+  const [timerOn, setTimerOn] = useState(true);
+  const [examMinutes, setExamMinutes] = useState("");
+  const [quizMode, setQuizMode] = useState("practice");
+
+  const [board, setBoard] = useState("CBSE");
+  const [customBoard, setCustomBoard] = useState("");
+  const [level, setLevel] = useState("");
+  const [subject, setSubject] = useState("");
+  const [chapter, setChapter] = useState("");
+  const [extra, setExtra] = useState("");
+
+  const [topicName, setTopicName] = useState("");
+  const [topicText, setTopicText] = useState("");
+  const [pdfSections, setPdfSections] = useState([]);
+  const [selectedHeadings, setSelectedHeadings] = useState([]);
+  const [pdfFileName, setPdfFileName] = useState("");
+  const [extracting, setExtracting] = useState(false);
+
+  // Study Shelf states
+  const [shelfMaterials, setShelfMaterials] = useState([]);
+  const [loadingShelf, setLoadingShelf] = useState(false);
+  const [selectedShelfId, setSelectedShelfId] = useState("");
+
+  // Grounding & continuity states
+  const [activeMaterialId, setActiveMaterialId] = useState(null);
+  const [activeCleanTopic, setActiveCleanTopic] = useState("");
+
+  const [mcqs, setMcqs] = useState([]);
+  const [quizTopic, setQuizTopic] = useState("");
+  const [quizSource, setQuizSource] = useState("text");
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [questionStartedAt, setQuestionStartedAt] = useState(null);
+  const [score, setScore] = useState(0);
+  const [answers, setAnswers] = useState([]);
+  const [isRetry, setIsRetry] = useState(false);
+
+  const [examAnswers, setExamAnswers] = useState({});
+  const [marked, setMarked] = useState([]);
+  const [secondsLeft, setSecondsLeft] = useState(0);
+  const [examStartedAt, setExamStartedAt] = useState(null);
+  const [confirmSubmit, setConfirmSubmit] = useState(false);
+
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("wrong_answer");
+  const [reportNote, setReportNote] = useState("");
+  const [reportStatus, setReportStatus] = useState("idle");
+  const [hintShown, setHintShown] = useState(false);
+
+  function resetReport() {
+    setReportOpen(false);
+    setReportReason("wrong_answer");
+    setReportNote("");
+    setReportStatus("idle");
+    setHintShown(false);
+  }
+
+  useEffect(() => {
+    const practice = location.state && location.state.practice;
+    if (!practice) return;
+    setView("new");
+
+    if (practice.materialId) {
+      setInputMode("shelf");
+      handleSelectShelfMaterial(practice.materialId);
+    } else {
+      setInputMode("syllabus");
+      setSubject(practice.subject || "");
+      setChapter(practice.subtopic || "");
+      setExtra(practice.subtopic ? `Focus only on "${practice.subtopic}".` : "");
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    if (!(stage === "quiz" && quizMode === "exam" && timerOn)) return;
+    if (secondsLeft <= 0) {
+      submitExam();
+      return;
+    }
+    const id = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
+    return () => clearTimeout(id);
+  }, [stage, quizMode, timerOn, secondsLeft]);
+
+  useReportActivity(
+    buildActivity({
+      stage,
+      view,
+      quizMode,
+      mcqs,
+      currentIndex,
+      selected,
+      answers,
+      score,
+      examAnswers,
+      quizTopic,
+    })
+  );
+
+  useEffect(() => {
+    if (stage !== "result") return;
+    const total = mcqs.length;
+    const percent = total > 0 ? Math.round((score / total) * 100) : 0;
+    logActivity(token, {
+      type: "quiz_completed",
+      title: `Completed quiz: ${clip(quizTopic, 60)}`,
+      description: `Scored ${score}/${total} (${percent}%)`,
+      link: "/quiz",
+    });
+  }, [stage]);
+
+  async function loadShelf() {
+    if (shelfMaterials.length > 0) return;
+    setLoadingShelf(true);
+    try {
+      const res = await fetch("/api/materials", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok && Array.isArray(data.materials)) {
+        setShelfMaterials(data.materials);
+      }
+    } catch (err) {
+      console.error("Failed to load study shelf:", err);
+    } finally {
+      setLoadingShelf(false);
+    }
+  }
+
+  async function handleSelectShelfMaterial(matId) {
+    setSelectedShelfId(matId);
+    setError("");
+    setExtracting(true);
+    setPdfSections([]);
+    setSelectedHeadings([]);
+    setTopicName("");
+    setTopicText("");
+
+    try {
+      const res = await fetch(`/api/materials/${matId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not load material sections");
+
+      const cleanDocTitle = (data.title || data.fileName || "Study Material").replace(/\.[a-z0-9]+$/i, "");
+      setPdfFileName(cleanDocTitle);
+      const sections = Array.isArray(data.sections) ? data.sections : [];
+      setPdfSections(sections);
+
+      if (sections.length === 0) {
+        setError("This material has no saved text sections.");
+      } else {
+        const allHeadings = sections.map((s) => s.heading);
+        setSelectedHeadings(allHeadings);
+        const combined = sections.map((s) => `${s.heading}\n${s.content}`).join("\n\n");
+        setTopicName(`${cleanDocTitle} (All Topics)`);
+        setTopicText(combined);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setExtracting(false);
+    }
+  }
+
+  async function handlePdfUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setError("");
+    setExtracting(true);
+    setPdfSections([]);
+    setSelectedHeadings([]);
+    setTopicName("");
+    setTopicText("");
+    setSelectedShelfId("");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/pdf/upload", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      let data = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = {};
+      }
+      if (!res.ok) throw new Error(data.error || "Could not read PDF");
+
+      const cleanDocTitle = (data.filename || "Study Material").replace(/\.[a-z0-9]+$/i, "");
+      setPdfFileName(cleanDocTitle);
+      setPdfSections(data.sections || []);
+      if (!data.sections || data.sections.length === 0) {
+        setError("No usable sections found in this PDF. Try a different file.");
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setExtracting(false);
+    }
+  }
+
+  function applySelection(headings) {
+    const chosen = pdfSections.filter((s) => headings.includes(s.heading));
+    if (chosen.length === 0) {
+      setTopicName("");
+      setTopicText("");
+      return;
+    }
+    const combinedText = chosen.map((s) => `${s.heading}\n${s.content}`).join("\n\n");
+    const combinedName =
+      chosen.length === pdfSections.length
+        ? `${pdfFileName} (All Topics)`
+        : chosen.map((s) => s.heading).join(", ");
+    setTopicName(combinedName);
+    setTopicText(combinedText);
+  }
+
+  function handleToggleSection(heading) {
+    const next = selectedHeadings.includes(heading)
+      ? selectedHeadings.filter((h) => h !== heading)
+      : [...selectedHeadings, heading];
+    setSelectedHeadings(next);
+    applySelection(next);
+  }
+
+  function handleToggleSelectAll() {
+    const next =
+      selectedHeadings.length === pdfSections.length
+        ? []
+        : pdfSections.map((s) => s.heading);
+    setSelectedHeadings(next);
+    applySelection(next);
+  }
+
+  function clampedCount() {
+    const n = parseInt(numQuestions, 10);
+    if (Number.isNaN(n)) return 5;
+    return Math.max(1, Math.min(n, MAX_QUESTIONS));
+  }
+
+  async function handleGenerate(e) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    const isSyllabus = inputMode === "syllabus";
+    const finalBoard = board === "Other" ? customBoard.trim() : board;
+    const count = clampedCount();
+    setNumQuestions(String(count));
+
+    const common = {
+      numQuestions: count,
+      difficulty,
+      questionType,
+      explanationStyle,
+    };
+
+    const payload = isSyllabus
+      ? {
+          mode: "syllabus",
+          board: finalBoard,
+          level: level.trim(),
+          subject: subject.trim(),
+          chapter: chapter.trim(),
+          extra: extra.trim(),
+          ...common,
+        }
+      : {
+          mode: "text",
+          sourceFileName: pdfFileName || `manual-${topicName}`,
+          topicName,
+          topicText,
+          ...common,
+        };
+
+    try {
+      const res = await fetch("/api/mcq/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not generate quiz");
+
+      const minutes = Math.max(1, parseInt(examMinutes, 10) || count);
+
+      setMcqs(data.mcqs);
+      setQuizSource(isSyllabus ? "syllabus" : "text");
+
+      const cleanTopic = isSyllabus
+        ? subject.trim()
+        : (inputMode === "pdf" || inputMode === "shelf") && pdfFileName
+        ? pdfFileName.replace(/\.[a-z0-9]+$/i, "")
+        : topicName;
+
+      const matId = inputMode === "shelf" && selectedShelfId ? selectedShelfId : null;
+      setActiveMaterialId(matId);
+      setActiveCleanTopic(cleanTopic);
+
+      setQuizTopic(cleanTopic);
+      setQuizMode(mode);
+      setCurrentIndex(0);
+      setScore(0);
+      setAnswers([]);
+      setSelected(null);
+      setIsRetry(false);
+      setExamAnswers({});
+      setMarked([]);
+      setConfirmSubmit(false);
+      setSecondsLeft(minutes * 60);
+      setExamStartedAt(Date.now());
+      resetReport();
+      setQuestionStartedAt(Date.now());
+      setStage("quiz");
+
+      logActivity(token, {
+        type: "quiz_generated",
+        title: `Generated a quiz: ${clip(cleanTopic, 60)}`,
+        description: `${count} questions, ${difficulty}, ${mode === "exam" ? "exam" : "practice"} mode`,
+        link: "/quiz",
+      });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleOpenSaved(id) {
+    const res = await fetch(`/api/mcq/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || data.message || "Could not open this quiz");
+    if (!data.mcqs || data.mcqs.length === 0) throw new Error("This quiz has no questions");
+
+    const prepared = data.mcqs.map((q) => ({
+      ...q,
+      options: q.options.length === 2 ? q.options : shuffleDifferent(q.options),
+    }));
+
+    const cleanTopic = (data.topicName || "").replace(/\.[a-z0-9]+$/i, "").replace(/\s*\(All Topics\)$/i, "");
+    setActiveMaterialId(data.materialId || null);
+    setActiveCleanTopic(cleanTopic);
+
+    setMcqs(prepared);
+    setQuizSource(data.mode === "syllabus" ? "syllabus" : "text");
+    setQuizTopic(data.topicName);
+    setDifficulty(data.difficulty || "Medium");
+    setQuizMode("practice");
+    setCurrentIndex(0);
+    setScore(0);
+    setAnswers([]);
+    setSelected(null);
+    setIsRetry(true);
+    setExamAnswers({});
+    setMarked([]);
+    resetReport();
+    setQuestionStartedAt(Date.now());
+    setStage("quiz");
+  }
+
+  async function saveAttempt(question, chosenAnswer, hintsUsed, secondsOverride) {
+    const timeTakenSeconds =
+      secondsOverride ?? Math.round((Date.now() - questionStartedAt) / 1000);
+    try {
+      await fetch("/api/quiz-attempts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          materialId: activeMaterialId || null,
+          cleanTopic: activeCleanTopic || quizTopic,
+          topic: quizTopic,
+          subtopic: question.subtopic || quizTopic,
+          difficulty,
+          question: question.question,
+          selectedAnswer: chosenAnswer,
+          correctAnswer: question.correct_answer,
+          timeTakenSeconds,
+          hintsUsed,
+          isRetry,
+        }),
+      });
+    } catch (err) {
+      console.error("Failed to save quiz attempt:", err.message);
+    }
+  }
+
+  async function submitReport() {
+    const question = mcqs[currentIndex];
+    setReportStatus("sending");
+    try {
+      const res = await fetch("/api/question-reports", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          topic: quizTopic,
+          subtopic: question.subtopic || quizTopic,
+          question: question.question,
+          options: question.options,
+          correctAnswer: question.correct_answer,
+          selectedAnswer: selected || "",
+          explanation: question.explanation || "",
+          reason: reportReason,
+          note: reportNote.trim(),
+        }),
+      });
+      if (!res.ok) throw new Error("Report failed");
+      setReportStatus("sent");
+    } catch (err) {
+      console.error("Failed to send report:", err.message);
+      setReportStatus("error");
+    }
+  }
+
+  function handleSelectOption(opt) {
+    if (selected !== null) return;
+    const question = mcqs[currentIndex];
+    const isCorrect = opt === question.correct_answer;
+    setSelected(opt);
+    if (isCorrect) setScore((s) => s + 1);
+    setAnswers((prev) => [
+      ...prev,
+      {
+        question: question.question,
+        selected: opt,
+        correct: question.correct_answer,
+        isCorrect,
+        explanation: question.explanation,
+        sourceHeading: question.source_heading || "",
+        sourceQuote: question.source_quote || "",
+        subtopic: question.subtopic || quizTopic,
+      },
+    ]);
+    saveAttempt(question, opt, hintShown ? 1 : 0);
+  }
+
+  function handleNext() {
+    resetReport();
+    if (currentIndex + 1 < mcqs.length) {
+      setCurrentIndex((i) => i + 1);
+      setSelected(null);
+      setQuestionStartedAt(Date.now());
+    } else {
+      setStage("result");
+    }
+  }
+
+  function toggleExamOption(opt) {
+    setExamAnswers((prev) => {
+      const next = { ...prev };
+      if (next[currentIndex] === opt) delete next[currentIndex];
+      else next[currentIndex] = opt;
+      return next;
+    });
+  }
+
+  function toggleMark() {
+    setMarked((prev) =>
+      prev.includes(currentIndex) ? prev.filter((i) => i !== currentIndex) : [...prev, currentIndex]
+    );
+  }
+
+  function goTo(index) {
+    if (index < 0 || index >= mcqs.length) return;
+    setCurrentIndex(index);
+    setConfirmSubmit(false);
+  }
+
+  function submitExam() {
+    const total = mcqs.length;
+    const elapsed = Math.max(1, Math.round((Date.now() - examStartedAt) / 1000));
+    const perQuestion = Math.max(1, Math.round(elapsed / total));
+    let sc = 0;
+
+    const built = mcqs.map((q, i) => {
+      const chosen = examAnswers[i] || "";
+      const ok = chosen !== "" && chosen === q.correct_answer;
+      if (ok) sc += 1;
+      if (chosen) saveAttempt(q, chosen, 0, perQuestion);
+      return {
+        question: q.question,
+        selected: chosen,
+        correct: q.correct_answer,
+        isCorrect: ok,
+        explanation: q.explanation,
+        sourceHeading: q.source_heading || "",
+        sourceQuote: q.source_quote || "",
+        subtopic: q.subtopic || quizTopic,
+      };
+    });
+
+    setAnswers(built);
+    setScore(sc);
+    setConfirmSubmit(false);
+    setStage("result");
+  }
+
+  function resetQuizState() {
+    setMcqs([]);
+    setAnswers([]);
+    setScore(0);
+    setSelected(null);
+    setCurrentIndex(0);
+    setIsRetry(false);
+    setExamAnswers({});
+    setMarked([]);
+    setConfirmSubmit(false);
+    setQuizMode("practice");
+    resetReport();
+  }
+
+  function handleRetryWrong() {
+    const wrongTexts = new Set(answers.filter((a) => !a.isCorrect).map((a) => a.question));
+    const wrongQuestions = mcqs.filter((q) => wrongTexts.has(q.question));
+    if (wrongQuestions.length === 0) return;
+
+    const prepared = shuffle(wrongQuestions).map((q) => {
+      const isTrueFalse = q.options.length === 2;
+      return { ...q, options: isTrueFalse ? q.options : shuffleDifferent(q.options) };
+    });
+
+    setMcqs(prepared);
+    setQuizMode("practice");
+    setCurrentIndex(0);
+    setScore(0);
+    setAnswers([]);
+    setSelected(null);
+    setIsRetry(true);
+    setExamAnswers({});
+    setMarked([]);
+    resetReport();
+    setQuestionStartedAt(Date.now());
+    setStage("quiz");
+  }
+
+  function handleExitQuiz() {
+    const text =
+      quizMode === "exam"
+        ? "Leave this exam? Your answers will NOT be saved."
+        : "Leave this quiz? Answers you already gave are saved.";
+    const ok = window.confirm(text);
+    if (!ok) return;
+    resetQuizState();
+    setStage("setup");
+  }
+
+  function handleRestart() {
+    resetQuizState();
+    setTopicName("");
+    setTopicText("");
+    setPdfSections([]);
+    setSelectedHeadings([]);
+    setPdfFileName("");
+    setSelectedShelfId("");
+    setActiveMaterialId(null);
+    setActiveCleanTopic("");
+    setView("new");
+    setStage("setup");
+  }
+
+  function changeTab(tabMode) {
+    setInputMode(tabMode);
+    setError("");
+    if (tabMode === "shelf") {
+      loadShelf();
+    }
+  }
+
+  // ---------------- SETUP ----------------
+  if (stage === "setup") {
+    const canGenerate =
+      inputMode === "syllabus"
+        ? subject.trim() !== "" && (board !== "Other" || customBoard.trim() !== "")
+        : topicName !== "" && topicText !== "";
+
+    return (
+      <div className="card lq-card" style={{ padding: "2rem", maxWidth: "1200px", margin: "0 auto" }}>
+        <Link to="/" className="lq-back" style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "var(--primary, #6366f1)", fontWeight: "600", textDecoration: "none", marginBottom: "1.5rem" }}>
+          <ArrowLeft size={16} /> Back to dashboard
+        </Link>
+
+        {/* Header Banner */}
+        <div className="lq-hero" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem", background: "linear-gradient(135deg, #4f46e5 0%, #9333ea 100%)", padding: "2rem", borderRadius: "20px", color: "#fff", boxShadow: "0 10px 25px rgba(79, 70, 229,.3)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+            <span className="lq-hero-art" style={{ background: "rgba(255,255,255,0.2)", padding: "14px", borderRadius: "16px", display: "flex" }}>
+              <Gamepad2 size={36} style={{ color: "#fde047" }} />
+            </span>
+            <div>
+              <h2 style={{ fontSize: "2rem", fontWeight: "800", marginBottom: "0.25rem", color: "#ffffff", letterSpacing: "-0.5px" }}>
+                {view === "new" ? "AI MCQ Generator Arena" : "Your Saved Quizzes"}
+              </h2>
+              <p style={{ opacity: 0.9, fontSize: "1rem", color: "#f3e8ff" }}>
+                {view === "new"
+                  ? "Configure your parameters and let our AI forge elite multi-disciplinary test modules for you."
+                  : "Reopen past test sessions and hone your mastery without spending extra AI tokens."}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="lq-tabs" style={{ display: "flex", gap: "0.75rem", marginBottom: "1.5rem" }}>
+          <button
+            type="button"
+            className={`lq-tab ${view === "new" ? "active" : ""}`}
+            onClick={() => setView("new")}
+            style={{ display: "flex", alignItems: "center", gap: "6px", padding: "0.75rem 1.25rem", borderRadius: "10px", fontWeight: "700", border: "none", cursor: "pointer", background: view === "new" ? "#6366f1" : "var(--bg, #f1f5f9)", color: view === "new" ? "#fff" : "var(--muted, #475569)" }}
+          >
+            <Sparkles size={16} /> New Quiz Arena
+          </button>
+          <button
+            type="button"
+            className={`lq-tab ${view === "history" ? "active" : ""}`}
+            onClick={() => setView("history")}
+            style={{ display: "flex", alignItems: "center", gap: "6px", padding: "0.75rem 1.25rem", borderRadius: "10px", fontWeight: "700", border: "none", cursor: "pointer", background: view === "history" ? "#6366f1" : "var(--bg, #f1f5f9)", color: view === "history" ? "#fff" : "var(--muted, #475569)" }}
+          >
+            <HistoryIcon size={16} /> Saved Quizzes
+          </button>
+        </div>
+
+        {view === "history" && <History onOpen={handleOpenSaved} />}
+
+        {view === "new" && (
+          <form className="lq-form" onSubmit={handleGenerate} style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+            <div className="lq-section" style={{ background: "var(--surface, #fff)", padding: "1.75rem", borderRadius: "20px", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)", border: "1px solid var(--border, #e2e8f0)" }}>
+              <h3 className="lq-section-title" style={{ fontSize: "1.2rem", fontWeight: "800", color: "var(--text, #1e293b)", marginBottom: "1.25rem" }}>1. Select Knowledge Source</h3>
+
+              <div className="lq-tabs" style={{ display: "flex", gap: "0.75rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
+                {TABS.map(({ id, label, Icon }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    className={`lq-tab ${inputMode === id ? "active" : ""}`}
+                    onClick={() => changeTab(id)}
+                    style={{ display: "flex", alignItems: "center", gap: "6px", padding: "0.6rem 1rem", borderRadius: "8px", fontWeight: "600", fontSize: "0.9rem", border: "1px solid var(--border, #cbd5e1)", cursor: "pointer", background: inputMode === id ? "rgba(99, 102, 241, 0.15)" : "var(--surface, #fff)", color: inputMode === id ? "var(--primary, #6366f1)" : "var(--muted, #475569)" }}
+                  >
+                    <Icon size={16} /> {label}
+                  </button>
+                ))}
+              </div>
+
+              {inputMode === "syllabus" && (
+                <div className="lq-form" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                  <div className="lq-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                    <label className="lq-field" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontWeight: "600", fontSize: "0.9rem", color: "var(--text, #334155)" }}>
+                      Board / University
+                      <select value={board} onChange={(e) => setBoard(e.target.value)} style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border, #cbd5e1)", background: "var(--bg, #f8fafc)", color: "var(--text, #1e293b)", fontSize: "0.95rem" }}>
+                        {BOARDS.map((b) => (
+                          <option key={b}>{b}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="lq-field" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontWeight: "600", fontSize: "0.9rem", color: "var(--text, #334155)" }}>
+                      Class / Semester
+                      <input
+                        value={level}
+                        onChange={(e) => setLevel(e.target.value)}
+                        placeholder="e.g. 10th, 12th, Sem 3"
+                        style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border, #cbd5e1)", background: "var(--bg, #f8fafc)", color: "var(--text, #1e293b)", fontSize: "0.95rem" }}
+                      />
+                    </label>
+                  </div>
+
+                  {board === "Other" && (
+                    <label className="lq-field" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontWeight: "600", fontSize: "0.9rem", color: "var(--text, #334155)" }}>
+                      Your board / university name
+                      <input
+                        value={customBoard}
+                        onChange={(e) => setCustomBoard(e.target.value)}
+                        placeholder="e.g. Karnataka PUC, Mumbai University"
+                        style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border, #cbd5e1)", background: "var(--bg, #f8fafc)", color: "var(--text, #1e293b)", fontSize: "0.95rem" }}
+                      />
+                    </label>
+                  )}
+
+                  <label className="lq-field" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontWeight: "600", fontSize: "0.9rem", color: "var(--text, #334155)" }}>
+                    Subject
+                    <input
+                      value={subject}
+                      onChange={(e) => setSubject(e.target.value)}
+                      placeholder="e.g. Python, Physics, Maths, Anatomy"
+                      required
+                      style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border, #cbd5e1)", background: "var(--bg, #f8fafc)", color: "var(--text, #1e293b)", fontSize: "0.95rem" }}
+                    />
+                  </label>
+                  <label className="lq-field" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontWeight: "600", fontSize: "0.9rem", color: "var(--text, #334155)" }}>
+                    Chapter / Topic (optional)
+                    <input
+                      value={chapter}
+                      onChange={(e) => setChapter(e.target.value)}
+                      placeholder="e.g. Loops, Electricity, Cardiovascular System"
+                      style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border, #cbd5e1)", background: "var(--bg, #f8fafc)", color: "var(--text, #1e293b)", fontSize: "0.95rem" }}
+                    />
+                  </label>
+                  <label className="lq-field" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontWeight: "600", fontSize: "0.9rem", color: "var(--text, #334155)" }}>
+                    Anything else you want? (optional)
+                    <textarea
+                      rows={2}
+                      value={extra}
+                      onChange={(e) => setExtra(e.target.value)}
+                      placeholder="e.g. focus on coding output prediction, avoid very easy ones"
+                      maxLength={300}
+                      style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border, #cbd5e1)", background: "var(--bg, #f8fafc)", color: "var(--text, #1e293b)", fontSize: "0.95rem", resize: "vertical" }}
+                    />
+                  </label>
+                </div>
+              )}
+
+              {inputMode === "paragraph" && (
+                <div className="lq-form" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                  <label className="lq-field" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontWeight: "600", fontSize: "0.9rem", color: "var(--text, #334155)" }}>
+                    Topic name
+                    <input
+                      value={topicName}
+                      onChange={(e) => setTopicName(e.target.value)}
+                      placeholder="e.g. MongoDB Aggregation Pipelines"
+                      required
+                      style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border, #cbd5e1)", background: "var(--bg, #f8fafc)", color: "var(--text, #1e293b)", fontSize: "0.95rem" }}
+                    />
+                  </label>
+                  <label className="lq-field" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontWeight: "600", fontSize: "0.9rem", color: "var(--text, #334155)" }}>
+                    Source text (what the questions should be based on)
+                    <textarea
+                      rows={6}
+                      value={topicText}
+                      onChange={(e) => setTopicText(e.target.value)}
+                      placeholder="Paste your study notes or reference text here..."
+                      required
+                      style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border, #cbd5e1)", background: "var(--bg, #f8fafc)", color: "var(--text, #1e293b)", fontSize: "0.95rem", resize: "vertical" }}
+                    />
+                  </label>
+                </div>
+              )}
+
+              {inputMode === "pdf" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                  <div className="lq-upload" style={{ border: "2px dashed var(--border, #cbd5e1)", padding: "2rem", borderRadius: "12px", textAlign: "center", background: "var(--bg, #f8fafc)" }}>
+                    <label className="lq-field" style={{ cursor: "pointer", fontWeight: "600", color: "var(--primary, #4f46e5)" }}>
+                      Choose a PDF file to parse
+                      <input type="file" accept="application/pdf" onChange={handlePdfUpload} style={{ display: "block", margin: "1rem auto 0" }} />
+                    </label>
+                    {extracting && <p className="lq-note" style={{ marginTop: "1rem", color: "var(--muted, #64748b)" }}>Reading and parsing your PDF...</p>}
+
+                    {pdfSections.length > 0 && (
+                      <>
+                        <div className="lq-select-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.5rem", marginBottom: "0.75rem" }}>
+                          <p style={{ fontWeight: "600", color: "var(--text, #334155)" }}>Pick the topics to include:</p>
+                          <button
+                            type="button"
+                            className="lq-link-btn"
+                            onClick={handleToggleSelectAll}
+                            style={{ background: "none", border: "none", color: "var(--primary, #4f46e5)", fontWeight: "600", cursor: "pointer" }}
+                          >
+                            {selectedHeadings.length === pdfSections.length
+                              ? "Unselect all"
+                              : "Select all"}
+                          </button>
+                        </div>
+                        <div className="lq-checks" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxHeight: "200px", overflowY: "auto", textAlign: "left", padding: "0.5rem", background: "var(--surface, #fff)", borderRadius: "8px", border: "1px solid var(--border, #e2e8f0)" }}>
+                          {pdfSections.map((s) => (
+                            <label className="lq-check" key={s.heading} style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.9rem", color: "var(--text, #334155)", cursor: "pointer" }}>
+                              <input
+                                type="checkbox"
+                                checked={selectedHeadings.includes(s.heading)}
+                                onChange={() => handleToggleSection(s.heading)}
+                              />
+                              {s.heading}
+                            </label>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {topicName && (
+                    <label className="lq-field" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontWeight: "600", fontSize: "0.9rem", color: "var(--text, #334155)" }}>
+                      Quiz will cover
+                      <input value={topicName} readOnly style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border, #cbd5e1)", background: "var(--bg, #f1f5f9)", color: "var(--text, #1e293b)" }} />
+                    </label>
+                  )}
+                </div>
+              )}
+
+              {inputMode === "shelf" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                    <label style={{ fontWeight: "700", fontSize: "0.95rem", color: "var(--text, #1e293b)" }}>
+                      Choose a saved material from your Study Shelf:
+                    </label>
+
+                    {loadingShelf ? (
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "var(--muted, #64748b)", padding: "1rem" }}>
+                        <Loader2 size={16} className="lq-spin" /> Loading your shelf...
+                      </div>
+                    ) : shelfMaterials.length === 0 ? (
+                      <div style={{ padding: "1.5rem", background: "var(--bg, #f8fafc)", border: "1px dashed var(--border, #cbd5e1)", borderRadius: "12px", textAlign: "center" }}>
+                        <p style={{ color: "var(--muted, #64748b)", margin: "0 0 0.5rem" }}>Your Study Shelf is empty.</p>
+                        <Link to="/materials" style={{ color: "var(--primary, #6366f1)", fontWeight: "700", textDecoration: "none" }}>
+                          Go upload notes or files to your shelf →
+                        </Link>
+                      </div>
+                    ) : (
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "10px" }}>
+                        {shelfMaterials.map((m) => {
+                          const isChosen = selectedShelfId === m.id;
+                          return (
+                            <button
+                              key={m.id}
+                              type="button"
+                              onClick={() => handleSelectShelfMaterial(m.id)}
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "flex-start",
+                                gap: "4px",
+                                padding: "12px 14px",
+                                borderRadius: "12px",
+                                border: isChosen ? "2px solid #6366f1" : "1.5px solid var(--border, #cbd5e1)",
+                                background: isChosen ? "rgba(99, 102, 241, 0.12)" : "var(--surface, #ffffff)",
+                                textAlign: "left",
+                                cursor: "pointer",
+                                transition: "all 0.15s ease",
+                              }}
+                            >
+                              <strong style={{ fontSize: "0.92rem", color: "var(--text, #1e293b)", wordBreak: "break-word" }}>
+                                {m.title}
+                              </strong>
+                              <span style={{ fontSize: "0.75rem", color: "var(--muted, #64748b)" }}>
+                                {m.sectionCount} sections · {m.fileName}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                  {extracting && (
+                    <p style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--muted, #64748b)", margin: 0 }}>
+                      <Loader2 size={16} className="lq-spin" /> Loading sections...
+                    </p>
+                  )}
+
+                  {pdfSections.length > 0 && (
+                    <div style={{ background: "var(--surface, #f8fafc)", padding: "1.25rem", borderRadius: "12px", border: "1px solid var(--border, #e2e8f0)" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                        <span style={{ fontWeight: "700", fontSize: "0.9rem", color: "var(--text, #334155)" }}>
+                          Pick sections to include ({selectedHeadings.length}/{pdfSections.length}):
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleToggleSelectAll}
+                          style={{ background: "none", border: "none", color: "var(--primary, #6366f1)", fontWeight: "700", cursor: "pointer", fontSize: "0.85rem" }}
+                        >
+                          {selectedHeadings.length === pdfSections.length ? "Unselect all" : "Select all"}
+                        </button>
+                      </div>
+
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxHeight: "180px", overflowY: "auto" }}>
+                        {pdfSections.map((s) => (
+                          <label key={s.heading} style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.88rem", color: "var(--text, #334155)", cursor: "pointer" }}>
+                            <input
+                              type="checkbox"
+                              checked={selectedHeadings.includes(s.heading)}
+                              onChange={() => handleToggleSection(s.heading)}
+                            />
+                            {s.heading}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {topicName && (
+                    <label style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontWeight: "600", fontSize: "0.9rem", color: "var(--text, #334155)" }}>
+                      Quiz will cover:
+                      <input
+                        value={topicName}
+                        readOnly
+                        style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border, #cbd5e1)", background: "var(--bg, #f1f5f9)", color: "var(--text, #1e293b)" }}
+                      />
+                    </label>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="lq-section" style={{ background: "var(--surface, #fff)", padding: "1.75rem", borderRadius: "20px", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)", border: "1px solid var(--border, #e2e8f0)" }}>
+              <h3 className="lq-section-title" style={{ fontSize: "1.2rem", fontWeight: "800", color: "var(--text, #1e293b)", marginBottom: "1.25rem" }}>2. Customize Quiz Parameters</h3>
+              <div className="lq-form" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                <div className="lq-field" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontWeight: "600", fontSize: "0.9rem", color: "var(--text, #334155)" }}>
+                  Mode
+                  <div className="lq-tabs lq-mode-tabs" style={{ display: "flex", gap: "0.75rem" }}>
+                    <button
+                      type="button"
+                      className={`lq-tab ${mode === "practice" ? "active" : ""}`}
+                      onClick={() => setMode("practice")}
+                      style={{ display: "flex", alignItems: "center", gap: "6px", padding: "0.6rem 1rem", borderRadius: "8px", fontWeight: "600", fontSize: "0.9rem", border: "1px solid var(--border, #cbd5e1)", cursor: "pointer", background: mode === "practice" ? "rgba(99, 102, 241, 0.15)" : "var(--surface, #fff)", color: mode === "practice" ? "var(--primary, #7e22ce)" : "var(--muted, #475569)" }}
+                    >
+                      <Lightbulb size={16} /> Practice Mode
+                    </button>
+                    <button
+                      type="button"
+                      className={`lq-tab ${mode === "exam" ? "active" : ""}`}
+                      onClick={() => setMode("exam")}
+                      style={{ display: "flex", alignItems: "center", gap: "6px", padding: "0.6rem 1rem", borderRadius: "8px", fontWeight: "600", fontSize: "0.9rem", border: "1px solid var(--border, #cbd5e1)", cursor: "pointer", background: mode === "exam" ? "rgba(99, 102, 241, 0.15)" : "var(--surface, #fff)", color: mode === "exam" ? "var(--primary, #7e22ce)" : "var(--muted, #475569)" }}
+                    >
+                      <ClipboardCheck size={16} /> Exam Mode
+                    </button>
+                  </div>
+                  <span className="lq-mode-help" style={{ fontSize: "0.85rem", color: "var(--muted, #64748b)", marginTop: "0.25rem" }}>
+                    {mode === "practice"
+                      ? "Instant feedback after every answer, with hints and explanations."
+                      : "No feedback until final submission. Includes timers and review bookmarks."}
+                  </span>
+                </div>
+
+                {mode === "exam" && (
+                  <div className="lq-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", alignItems: "center" }}>
+                    <label className="lq-check" style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontWeight: "600", fontSize: "0.9rem", color: "var(--text, #334155)", cursor: "pointer" }}>
+                      <input
+                        type="checkbox"
+                        checked={timerOn}
+                        onChange={(e) => setTimerOn(e.target.checked)}
+                      />
+                      Use a countdown timer
+                    </label>
+                    {timerOn && (
+                      <label className="lq-field" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontWeight: "600", fontSize: "0.9rem", color: "var(--text, #334155)" }}>
+                        Time limit (minutes)
+                        <input
+                          type="number"
+                          min={1}
+                          max={180}
+                          value={examMinutes}
+                          onChange={(e) => setExamMinutes(e.target.value)}
+                          placeholder={`${clampedCount()} (1 min / question)`}
+                          style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border, #cbd5e1)", background: "var(--bg, #f8fafc)", color: "var(--text, #1e293b)", fontSize: "0.95rem" }}
+                        />
+                      </label>
+                    )}
+                  </div>
+                )}
+
+                <div className="lq-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <label className="lq-field" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontWeight: "600", fontSize: "0.9rem", color: "var(--text, #334155)" }}>
+                    Number of questions
+                    <select
+                      value={numQuestions}
+                      onChange={(e) => setNumQuestions(e.target.value)}
+                      style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border, #cbd5e1)", background: "var(--bg, #f8fafc)", color: "var(--text, #1e293b)", fontSize: "0.95rem" }}
+                    >
+                      {[5, 10, 15, 20, 25].map((n) => (
+                        <option key={n} value={n}>
+                          {n} questions
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="lq-field" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontWeight: "600", fontSize: "0.9rem", color: "var(--text, #334155)" }}>
+                    Difficulty
+                    <select
+                      value={difficulty}
+                      onChange={(e) => setDifficulty(e.target.value)}
+                      style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border, #cbd5e1)", background: "var(--bg, #f8fafc)", color: "var(--text, #1e293b)", fontSize: "0.95rem" }}
+                    >
+                      {["Easy", "Medium", "Hard", "Exam level"].map((d) => (
+                        <option key={d}>{d}</option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+
+                <div className="lq-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <label className="lq-field" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontWeight: "600", fontSize: "0.9rem", color: "var(--text, #334155)" }}>
+                    Question type
+                    <select
+                      value={questionType}
+                      onChange={(e) => setQuestionType(e.target.value)}
+                      style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border, #cbd5e1)", background: "var(--bg, #f8fafc)", color: "var(--text, #1e293b)", fontSize: "0.95rem" }}
+                    >
+                      {QUESTION_TYPES.map((t) => (
+                        <option key={t}>{t}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="lq-field" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontWeight: "600", fontSize: "0.9rem", color: "var(--text, #334155)" }}>
+                    Explanation style
+                    <select
+                      value={explanationStyle}
+                      onChange={(e) => setExplanationStyle(e.target.value)}
+                      style={{ padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border, #cbd5e1)", background: "var(--bg, #f8fafc)", color: "var(--text, #1e293b)", fontSize: "0.95rem" }}
+                    >
+                      {["Short", "Detailed", "Step-by-step"].map((s) => (
+                        <option key={s}>{s}</option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+              </div>
+
+              {error && <div className="lq-error" style={{ background: "rgba(239, 68, 68, 0.15)", color: "#ef4444", padding: "1rem", borderRadius: "8px", marginTop: "1rem" }}>{error}</div>}
+
+              <div className="lq-actions" style={{ marginTop: "2rem", textAlign: "center" }}>
+                <button
+                  type="submit"
+                  className="primary-btn lq-gen-btn"
+                  disabled={loading || !canGenerate}
+                  style={{ background: "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)", color: "#fff", padding: "1rem 2.5rem", borderRadius: "12px", border: "none", fontWeight: "800", fontSize: "1.05rem", cursor: "pointer", boxShadow: "0 4px 15px rgba(99, 102, 241, 0.4)", display: "inline-flex", alignItems: "center", gap: "8px" }}
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 size={18} className="lq-spin" style={{ animation: "spin 1s linear infinite" }} /> Forging AI Quiz Module...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={18} /> Generate MCQ Quiz Arena 🚀
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </form>
+        )}
+      </div>
+    );
+  }
+
+  // ---------------- RESULT ----------------
+  if (stage === "result") {
+    const total = mcqs.length;
+    const percent = total > 0 ? Math.round((score / total) * 100) : 0;
+    const wrongAnswersCount = answers.filter((a) => !a.isCorrect).length;
+
+    return (
+      <div className="card lq-card lq-result-card" style={{ padding: "2rem", maxWidth: "1000px", margin: "0 auto" }}>
+        <Link to="/" className="lq-back" style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "var(--primary, #6366f1)", fontWeight: "600", textDecoration: "none", marginBottom: "1.5rem" }}>
+          <ArrowLeft size={16} /> Back to dashboard
+        </Link>
+
+        <div className="lq-result-hero" style={{ textAlign: "center", marginBottom: "2rem" }}>
+          <Mascot
+            mood={percent >= 75 ? "happy" : percent >= 40 ? "neutral" : "sad"}
+            message={pick(percent >= 75 ? HAPPY : SAD, score)}
+            animKey={percent}
+            size={84}
+          />
+          <h2 style={{ fontSize: "2rem", fontWeight: "800", color: "var(--text, #1e293b)", marginTop: "1rem" }}>Mission Accomplished!</h2>
+          <p className="lq-result-topic" style={{ color: "var(--muted, #64748b)", fontSize: "1.1rem" }}>{quizTopic}</p>
+        </div>
+
+        <div className="lq-score-banner" style={{ background: "var(--bg, #f8fafc)", padding: "2rem", borderRadius: "16px", textAlign: "center", marginBottom: "2rem", border: "1px solid var(--border, #e2e8f0)" }}>
+          <div className="lq-score-big" style={{ fontSize: "3rem", fontWeight: "900", color: "#4f46e5" }}>
+            {score} / {total}
+          </div>
+          <div className="lq-score-percent" style={{ fontSize: "1.2rem", fontWeight: "700", color: "#10b981" }}>{percent}% correct mastery</div>
+        </div>
+
+        <div className="lq-result-actions" style={{ display: "flex", justifyContent: "center", gap: "1rem", marginBottom: "2.5rem", flexWrap: "wrap" }}>
+          <button type="button" className="primary-btn" onClick={handleRestart} style={{ background: "#6366f1", color: "#fff", padding: "0.75rem 1.5rem", borderRadius: "10px", border: "none", fontWeight: "700", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+            <RotateCcw size={16} /> Create Another Quiz
+          </button>
+          {wrongAnswersCount > 0 && (
+            <button type="button" className="lq-retry-btn" onClick={handleRetryWrong} style={{ background: "#ef4444", color: "#fff", padding: "0.75rem 1.5rem", borderRadius: "10px", border: "none", fontWeight: "700", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <Repeat size={16} /> Retry {wrongAnswersCount} Wrong Questions
+            </button>
+          )}
+        </div>
+
+        <div className="lq-section">
+          <h3 className="lq-section-title" style={{ fontSize: "1.25rem", fontWeight: "800", color: "var(--text, #1e293b)", marginBottom: "1rem" }}>Review Answers</h3>
+          <div className="lq-review-list" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            {answers.map((ans, idx) => (
+              <div
+                key={idx}
+                className={`lq-review-item ${ans.isCorrect ? "correct" : "wrong"}`}
+                style={{ padding: "1.25rem", borderRadius: "12px", background: ans.isCorrect ? "rgba(16, 185, 129, 0.12)" : "rgba(239, 68, 68, 0.12)", border: `1px solid ${ans.isCorrect ? "#10b981" : "#ef4444"}` }}
+              >
+                <div className="lq-review-top" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                  <span className="lq-review-num" style={{ fontWeight: "700", color: "var(--muted, #64748b)" }}>Q{idx + 1}</span>
+                  <strong style={{ flex: 1, margin: "0 1rem", color: "var(--text, #1e293b)" }}>{ans.question}</strong>
+                  {ans.isCorrect ? (
+                    <span className="lq-badge good" style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "#dcfce7", color: "#166534", padding: "4px 8px", borderRadius: "6px", fontSize: "0.8rem", fontWeight: "700" }}>
+                      <Check size={14} /> Correct
+                    </span>
+                  ) : (
+                    <span className="lq-badge bad" style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "#fee2e2", color: "#991b1b", padding: "4px 8px", borderRadius: "6px", fontSize: "0.8rem", fontWeight: "700" }}>
+                      <X size={14} /> Incorrect
+                    </span>
+                  )}
+                </div>
+                <div className="lq-review-details" style={{ fontSize: "0.9rem", color: "var(--text, #475569)", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                  <div>
+                    Your answer: <span style={{ fontWeight: "600" }}>{ans.selected || "Not answered"}</span>
+                  </div>
+                  {!ans.isCorrect && (
+                    <div>
+                      Correct answer: <span className="green" style={{ color: "#16a34a", fontWeight: "700" }}>{ans.correct}</span>
+                    </div>
+                  )}
+                  <SourceNote heading={ans.sourceHeading} quote={ans.sourceQuote} />
+                  {ans.explanation && (
+                    <div className="lq-review-exp" style={{ marginTop: "0.5rem", fontStyle: "italic", color: "var(--text, #334155)" }}>
+                      <strong>Explanation:</strong> {ans.explanation}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ---------------- QUIZ RUNNING ----------------
+  const q = mcqs[currentIndex];
+  if (!q) return null;
+
+  if (quizMode === "exam") {
+    const answeredCount = Object.keys(examAnswers).length;
+    const isMarked = marked.includes(currentIndex);
+
+    return (
+      <div className="card lq-card lq-exam-page" style={{ padding: "2rem", maxWidth: "1200px", margin: "0 auto" }}>
+        <div className="lq-exam-top" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", paddingBottom: "1rem", borderBottom: "1px solid var(--border, #e2e8f0)" }}>
+          <div className="lq-exam-info" style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <span className="lq-exam-badge" style={{ background: "#4f46e5", color: "#fff", padding: "4px 10px", borderRadius: "6px", fontSize: "0.75rem", fontWeight: "800" }}>EXAM MODE</span>
+            <strong style={{ color: "var(--text, #1e293b)", fontSize: "1.1rem" }}>{quizTopic}</strong>
+          </div>
+          <div className="lq-exam-timer-box" style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: "700", fontSize: "1.1rem", color: secondsLeft < 60 ? "#dc2626" : "var(--text, #1e293b)" }}>
+            <Clock size={18} />
+            <span>{formatClock(secondsLeft)}</span>
+          </div>
+          <button type="button" className="lq-link-btn" onClick={handleExitQuiz} style={{ background: "none", border: "none", color: "#ef4444", fontWeight: "700", cursor: "pointer" }}>
+            Exit exam
+          </button>
+        </div>
+
+        {confirmSubmit ? (
+          <div className="lq-confirm-box" style={{ textAlign: "center", padding: "3rem", background: "var(--surface, #fff)", borderRadius: "16px" }}>
+            <h3 style={{ fontSize: "1.5rem", fontWeight: "800", marginBottom: "0.5rem" }}>Ready to submit your exam?</h3>
+            <p style={{ color: "var(--muted, #64748b)", marginBottom: "1.5rem" }}>
+              You have answered {answeredCount} out of {mcqs.length} questions.
+              {answeredCount < mcqs.length &&
+                ` (${mcqs.length - answeredCount} left blank)`}
+            </p>
+            <div className="lq-confirm-actions" style={{ display: "flex", justifyContent: "center", gap: "1rem" }}>
+              <button
+                type="button"
+                className="secondary-btn"
+                onClick={() => setConfirmSubmit(false)}
+                style={{ padding: "0.75rem 1.5rem", borderRadius: "8px", border: "1px solid var(--border, #cbd5e1)", background: "var(--surface, #fff)", color: "var(--text, #1e293b)", fontWeight: "600", cursor: "pointer" }}
+              >
+                Continue exam
+              </button>
+              <button type="button" className="primary-btn" onClick={submitExam} style={{ padding: "0.75rem 1.5rem", borderRadius: "8px", background: "#10b981", color: "#fff", border: "none", fontWeight: "700", cursor: "pointer" }}>
+                Yes, submit now
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="lq-exam-body" style={{ display: "grid", gridTemplateColumns: "250px 1fr", gap: "2rem" }}>
+            <div className="lq-exam-nav" style={{ background: "var(--bg, #f8fafc)", padding: "1.25rem", borderRadius: "16px", border: "1px solid var(--border, #e2e8f0)", height: "fit-content" }}>
+              <div className="lq-nav-title" style={{ fontWeight: "700", marginBottom: "1rem", color: "var(--text, #334155)" }}>Questions Navigation</div>
+              <div className="lq-nav-grid" style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "8px", marginBottom: "1.25rem" }}>
+                {mcqs.map((_, i) => {
+                  const hasAnswer = examAnswers[i] !== undefined;
+                  const isCur = i === currentIndex;
+                  const m = marked.includes(i);
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      className={`lq-nav-dot ${hasAnswer ? "answered" : ""} ${
+                        isCur ? "current" : ""
+                      } ${m ? "marked" : ""}`}
+                      onClick={() => goTo(i)}
+                      style={{ padding: "8px 0", borderRadius: "6px", border: isCur ? "2px solid #4f46e5" : "1px solid var(--border, #cbd5e1)", background: hasAnswer ? "rgba(16, 185, 129, 0.2)" : "var(--surface, #fff)", fontWeight: "700", fontSize: "0.85rem", cursor: "pointer", color: "var(--text, #1e293b)" }}
+                    >
+                      {i + 1}
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                className="primary-btn lq-submit-early-btn"
+                onClick={() => setConfirmSubmit(true)}
+                style={{ width: "100%", padding: "0.75rem", background: "#4f46e5", color: "#fff", border: "none", borderRadius: "8px", fontWeight: "700", cursor: "pointer" }}
+              >
+                Submit Exam
+              </button>
+            </div>
+
+            <div className="lq-exam-main" style={{ background: "var(--surface, #fff)", padding: "2rem", borderRadius: "16px", border: "1px solid var(--border, #e2e8f0)" }}>
+              <div className="lq-q-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
+                <span className="lq-q-num" style={{ fontWeight: "700", color: "var(--muted, #64748b)" }}>
+                  Question {currentIndex + 1} of {mcqs.length}
+                </span>
+                <button
+                  type="button"
+                  className={`lq-mark-btn ${isMarked ? "active" : ""}`}
+                  onClick={toggleMark}
+                  style={{ display: "flex", alignItems: "center", gap: "4px", background: isMarked ? "#fef3c7" : "var(--bg, #f1f5f9)", border: "none", padding: "6px 12px", borderRadius: "6px", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer", color: isMarked ? "#d97706" : "var(--muted, #475569)" }}
+                >
+                  <Bookmark size={15} /> {isMarked ? "Bookmarked" : "Mark for review"}
+                </button>
+              </div>
+
+              <div className="lq-question-text" style={{ fontSize: "1.15rem", fontWeight: "700", color: "var(--text, #1e293b)", marginBottom: "1.5rem", lineHeight: "1.5" }}>{q.question}</div>
+
+              <div className="lq-options" style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginBottom: "2rem" }}>
+                {q.options.map((opt) => {
+                  const chosen = examAnswers[currentIndex] === opt;
+                  return (
+                    <button
+                      key={opt}
+                      type="button"
+                      className={`lq-option ${chosen ? "selected" : ""}`}
+                      onClick={() => toggleExamOption(opt)}
+                      style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1rem", borderRadius: "10px", border: chosen ? "2px solid #4f46e5" : "1px solid var(--border, #cbd5e1)", background: chosen ? "rgba(99, 102, 241, 0.15)" : "var(--bg, #f8fafc)", textAlign: "left", cursor: "pointer", width: "100%" }}
+                    >
+                      <span className="lq-opt-text" style={{ fontSize: "1rem", color: "var(--text, #334155)", fontWeight: "500" }}>{opt}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="lq-exam-foot-nav" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <button
+                  type="button"
+                  className="secondary-btn"
+                  disabled={currentIndex === 0}
+                  onClick={() => goTo(currentIndex - 1)}
+                  style={{ display: "flex", alignItems: "center", gap: "4px", padding: "0.6rem 1.25rem", borderRadius: "8px", border: "1px solid var(--border, #cbd5e1)", background: "var(--surface, #fff)", color: "var(--text, #1e293b)", fontWeight: "600", cursor: "pointer" }}
+                >
+                  <ChevronLeft size={16} /> Previous
+                </button>
+                {currentIndex + 1 < mcqs.length ? (
+                  <button
+                    type="button"
+                    className="primary-btn"
+                    onClick={() => goTo(currentIndex + 1)}
+                    style={{ display: "flex", alignItems: "center", gap: "4px", padding: "0.6rem 1.25rem", borderRadius: "8px", background: "#4f46e5", color: "#fff", border: "none", fontWeight: "700", cursor: "pointer" }}
+                  >
+                    Next <ChevronRight size={16} />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="primary-btn"
+                    onClick={() => setConfirmSubmit(true)}
+                    style={{ display: "flex", alignItems: "center", gap: "4px", padding: "0.6rem 1.25rem", borderRadius: "8px", background: "#10b981", color: "#fff", border: "none", fontWeight: "700", cursor: "pointer" }}
+                  >
+                    Review & Submit <ChevronRight size={16} />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const answered = selected !== null;
+  const isCorrect = selected === q.correct_answer;
+  const streak = trailingStreak(answers);
+
+  return (
+    <div className="card lq-card lq-quiz-page" style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
+      <div className="lq-quiz-top" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
+        <div className="lq-quiz-topic-info" style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <span className="lq-badge topic" style={{ background: "rgba(99, 102, 241, 0.15)", color: "var(--primary, #4f46e5)", padding: "4px 10px", borderRadius: "6px", fontWeight: "700", fontSize: "0.85rem" }}>{quizTopic}</span>
+          <span className="lq-muted" style={{ color: "var(--muted, #64748b)", fontSize: "0.9rem", fontWeight: "600" }}>
+            Question {currentIndex + 1} of {mcqs.length}
+          </span>
+        </div>
+        <div className="lq-quiz-top-right" style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          {streak >= 2 && (
+            <div className="lq-streak-badge" style={{ display: "flex", alignItems: "center", gap: "4px", background: "#ffedd5", color: "#c2410c", padding: "4px 10px", borderRadius: "20px", fontWeight: "800", fontSize: "0.85rem" }}>
+              <Flame size={16} className="fire" /> {streak} streak!
+            </div>
+          )}
+          <button type="button" className="lq-link-btn" onClick={handleExitQuiz} style={{ background: "none", border: "none", color: "#ef4444", fontWeight: "700", cursor: "pointer" }}>
+            Exit
+          </button>
+        </div>
+      </div>
+
+      <div className="lq-progress-bar" style={{ height: "8px", background: "var(--border, #e2e8f0)", borderRadius: "4px", overflow: "hidden", marginBottom: "1.5rem" }}>
+        <div
+          className="lq-progress-fill"
+          style={{ width: `${((currentIndex + 1) / mcqs.length) * 100}%`, height: "100%", background: "#4f46e5", borderRadius: "4px", transition: "width 0.4s ease" }}
+        />
+      </div>
+
+      <Mascot
+        mood={answered ? (isCorrect ? "happy" : "sad") : "idle"}
+        message={
+          answered
+            ? isCorrect
+              ? pick(HAPPY, currentIndex)
+              : pick(SAD, currentIndex)
+            : pick(IDLE, currentIndex)
+        }
+        animKey={currentIndex}
+        size={76}
+      />
+
+      <div className="lq-question-box" style={{ background: "var(--surface, #fff)", padding: "2rem", borderRadius: "20px", border: "1px solid var(--border, #e2e8f0)", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}>
+        <div className="lq-question-text" style={{ fontSize: "1.2rem", fontWeight: "800", color: "var(--text, #1e293b)", marginBottom: "1.5rem", lineHeight: "1.5" }}>{q.question}</div>
+
+        <div className="lq-options" style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginBottom: "1.5rem" }}>
+          {q.options.map((opt) => {
+            let cls = "lq-option";
+            let bgStyle = "var(--bg, #f8fafc)";
+            let borderStyle = "1px solid var(--border, #cbd5e1)";
+            let textCol = "var(--text, #334155)";
+
+            if (answered) {
+              if (opt === q.correct_answer) {
+                bgStyle = "rgba(16, 185, 129, 0.15)";
+                borderStyle = "2px solid #16a34a";
+                textCol = "#16a34a";
+              } else if (opt === selected) {
+                bgStyle = "rgba(239, 68, 68, 0.15)";
+                borderStyle = "2px solid #dc2626";
+                textCol = "#dc2626";
+              } else {
+                bgStyle = "var(--bg, #f1f5f9)";
+                borderStyle = "1px solid var(--border, #e2e8f0)";
+                textCol = "var(--muted, #94a3b8)";
+              }
+            }
+
+            return (
+              <button
+                key={opt}
+                type="button"
+                className={cls}
+                disabled={answered}
+                onClick={() => handleSelectOption(opt)}
+                style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1rem 1.25rem", borderRadius: "12px", border: borderStyle, background: bgStyle, textAlign: "left", cursor: answered ? "default" : "pointer", width: "100%", transition: "all 0.2s ease" }}
+              >
+                <span className="lq-opt-text" style={{ fontSize: "1rem", color: textCol, fontWeight: "600" }}>{opt}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {!answered && !hintShown && (
+          <div className="lq-q-tools" style={{ marginBottom: "1rem" }}>
+            <button
+              type="button"
+              className="lq-text-btn"
+              onClick={() => setHintShown(true)}
+              style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "none", border: "none", color: "#d97706", fontWeight: "700", cursor: "pointer", fontSize: "0.9rem" }}
+            >
+              <Lightbulb size={16} /> Need a hint?
+            </button>
+          </div>
+        )}
+
+        {hintShown && (
+          <div className="lq-hint-box" style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", background: "rgba(245, 158, 11, 0.15)", padding: "1rem", borderRadius: "10px", marginBottom: "1rem", border: "1px solid rgba(245, 158, 11, 0.4)", color: "#f59e0b" }}>
+            <Lightbulb size={20} style={{ flexShrink: 0, marginTop: "2px" }} />
+            <div style={{ fontSize: "0.95rem", lineHeight: "1.4" }}>
+              <strong>Hint:</strong> {q.hint || "Read the question carefully and eliminate incorrect options."}
+            </div>
+          </div>
+        )}
+
+        {answered && (
+          <div className={`lq-feedback ${isCorrect ? "good" : "bad"}`} style={{ padding: "1.25rem", borderRadius: "12px", background: isCorrect ? "rgba(16, 185, 129, 0.12)" : "rgba(239, 68, 68, 0.12)", border: `1px solid ${isCorrect ? "#10b981" : "#ef4444"}`, marginBottom: "1.5rem" }}>
+            <div className="lq-feedback-title" style={{ display: "flex", alignItems: "center", gap: "6px", color: isCorrect ? "#16a34a" : "#dc2626", fontWeight: "800", fontSize: "1.1rem", marginBottom: "0.5rem" }}>
+              {isCorrect ? <Check size={20} /> : <X size={20} />}
+              <span>{isCorrect ? "Correct!" : "Incorrect"}</span>
+            </div>
+            {q.explanation && <p style={{ color: "var(--text, #334155)", fontSize: "0.95rem", lineHeight: "1.5", marginBottom: "1rem" }}>{q.explanation}</p>}
+            <SourceNote heading={q.source_heading} quote={q.source_quote} />
+
+            <div className="lq-feedback-foot" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
+              <button
+                type="button"
+                className="lq-report-toggle"
+                onClick={() => setReportOpen((o) => !o)}
+                style={{ background: "none", border: "none", color: "var(--muted, #64748b)", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "4px" }}
+              >
+                <Flag size={14} /> Report a problem with this question
+              </button>
+
+              <button type="button" className="primary-btn" onClick={handleNext} style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "#4f46e5", color: "#fff", padding: "0.75rem 1.5rem", borderRadius: "8px", border: "none", fontWeight: "700", cursor: "pointer" }}>
+                {currentIndex + 1 < mcqs.length ? "Next Question" : "See Results"}
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {reportOpen && (
+          <div className="lq-report-box" style={{ background: "var(--bg, #f8fafc)", padding: "1.25rem", borderRadius: "12px", border: "1px solid var(--border, #cbd5e1)", marginTop: "1rem" }}>
+            <h4 style={{ fontWeight: "700", marginBottom: "0.75rem", color: "var(--text, #1e293b)" }}>Report a Problem</h4>
+            {reportStatus === "sent" ? (
+              <p className="lq-success-text" style={{ color: "#16a34a", fontWeight: "600" }}>Thank you! Your report has been submitted.</p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                <label className="lq-field" style={{ display: "flex", flexDirection: "column", gap: "0.25rem", fontWeight: "600", fontSize: "0.85rem", color: "var(--text, #334155)" }}>
+                  Reason
+                  <select
+                    value={reportReason}
+                    onChange={(e) => setReportReason(e.target.value)}
+                    style={{ padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border, #cbd5e1)", background: "var(--surface, #fff)", color: "var(--text, #1e293b)" }}
+                  >
+                    {REPORT_REASONS.map((r) => (
+                      <option key={r.value} value={r.value}>
+                        {r.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="lq-field" style={{ display: "flex", flexDirection: "column", gap: "0.25rem", fontWeight: "600", fontSize: "0.85rem", color: "var(--text, #334155)" }}>
+                  Details (optional)
+                  <input
+                    value={reportNote}
+                    onChange={(e) => setReportNote(e.target.value)}
+                    placeholder="Tell us what is wrong..."
+                    style={{ padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border, #cbd5e1)", background: "var(--surface, #fff)", color: "var(--text, #1e293b)" }}
+                  />
+                </label>
+                <div className="lq-report-actions" style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "0.5rem" }}>
+                  <button
+                    type="button"
+                    className="secondary-btn"
+                    onClick={() => setReportOpen(false)}
+                    style={{ padding: "0.5rem 1rem", borderRadius: "6px", border: "1px solid var(--border, #cbd5e1)", background: "var(--surface, #fff)", color: "var(--text, #1e293b)", fontWeight: "600", cursor: "pointer", fontSize: "0.85rem" }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="primary-btn"
+                    onClick={submitReport}
+                    disabled={reportStatus === "sending"}
+                    style={{ padding: "0.5rem 1rem", borderRadius: "6px", background: "#4f46e5", color: "#fff", border: "none", fontWeight: "700", cursor: "pointer", fontSize: "0.85rem" }}
+                  >
+                    {reportStatus === "sending" ? "Sending..." : "Submit Report"}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

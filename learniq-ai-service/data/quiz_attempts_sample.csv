@@ -1,0 +1,460 @@
+student_id,topic,subtopic,difficulty,is_correct,time_taken_seconds,attempt_number,hints_used
+S001,Recursion,Stack Overflow,Hard,1,89,1,0
+S001,Recursion,Recursive Calls,Easy,1,13,2,0
+S001,Recursion,Stack Overflow,Hard,1,52,3,0
+S001,Machine Learning,Model Evaluation,Hard,0,64,1,0
+S001,Machine Learning,Unsupervised Learning,Easy,0,21,2,0
+S001,Machine Learning,Model Evaluation,Medium,0,25,3,0
+S001,Machine Learning,Unsupervised Learning,Medium,0,40,4,0
+S001,Machine Learning,Supervised Learning,Hard,0,90,5,0
+S001,Data Structures,Arrays,Hard,0,50,1,2
+S001,Data Structures,Linked Lists,Easy,0,18,2,0
+S001,Data Structures,Trees,Medium,0,34,3,2
+S001,Data Structures,Linked Lists,Easy,1,14,4,0
+S001,Python Basics,Data Types,Easy,1,19,1,0
+S001,Python Basics,Functions,Easy,0,17,2,1
+S001,Python Basics,Data Types,Medium,1,58,3,0
+S001,Python Basics,Functions,Easy,0,30,4,1
+S001,Decision Trees,Entropy,Easy,1,16,1,0
+S001,Decision Trees,Entropy,Hard,0,80,2,0
+S001,Decision Trees,Entropy,Medium,0,41,3,0
+S001,Decision Trees,Entropy,Hard,1,56,4,0
+S002,Recursion,Recursive Calls,Easy,0,29,1,2
+S002,Recursion,Base Cases,Easy,1,24,2,0
+S002,Recursion,Base Cases,Easy,0,22,3,1
+S002,Recursion,Recursive Calls,Easy,0,17,4,0
+S002,Recursion,Base Cases,Medium,1,18,5,0
+S002,Machine Learning,Unsupervised Learning,Hard,0,93,1,2
+S002,Machine Learning,Model Evaluation,Hard,1,70,2,2
+S002,Machine Learning,Supervised Learning,Hard,1,77,3,1
+S002,Machine Learning,Model Evaluation,Hard,1,72,4,2
+S002,Machine Learning,Supervised Learning,Hard,0,63,5,1
+S002,Data Structures,Trees,Easy,0,22,1,2
+S002,Data Structures,Trees,Hard,0,66,2,1
+S002,Data Structures,Arrays,Hard,0,66,3,1
+S002,Python Basics,Functions,Easy,1,26,1,0
+S002,Python Basics,Data Types,Easy,1,21,2,0
+S002,Python Basics,Loops,Easy,1,24,3,2
+S002,Python Basics,Data Types,Medium,0,57,4,0
+S002,Python Basics,Data Types,Hard,0,62,5,0
+S002,Python Basics,Loops,Medium,1,51,6,2
+S002,Decision Trees,Overfitting,Medium,0,49,1,1
+S002,Decision Trees,Overfitting,Medium,0,43,2,1
+S002,Decision Trees,Information Gain,Easy,1,18,3,0
+S002,Decision Trees,Overfitting,Medium,0,22,4,2
+S003,Recursion,Base Cases,Easy,0,23,1,0
+S003,Recursion,Stack Overflow,Easy,0,17,2,0
+S003,Recursion,Base Cases,Medium,0,36,3,0
+S003,Machine Learning,Supervised Learning,Hard,1,92,1,0
+S003,Machine Learning,Unsupervised Learning,Hard,0,85,2,0
+S003,Machine Learning,Supervised Learning,Easy,0,29,3,1
+S003,Machine Learning,Unsupervised Learning,Hard,0,69,4,0
+S003,Machine Learning,Unsupervised Learning,Easy,0,29,5,1
+S003,Data Structures,Arrays,Medium,0,55,1,0
+S003,Data Structures,Arrays,Easy,0,16,2,0
+S003,Data Structures,Linked Lists,Medium,0,45,3,1
+S003,Data Structures,Trees,Hard,0,104,4,1
+S003,Python Basics,Data Types,Medium,1,44,1,0
+S003,Python Basics,Functions,Hard,0,13,2,0
+S003,Python Basics,Functions,Hard,0,86,3,0
+S003,Python Basics,Data Types,Medium,1,53,4,0
+S003,Decision Trees,Information Gain,Medium,1,33,1,0
+S003,Decision Trees,Information Gain,Hard,1,82,2,0
+S003,Decision Trees,Information Gain,Hard,0,39,3,1
+S003,Decision Trees,Overfitting,Medium,0,46,4,1
+S004,Recursion,Stack Overflow,Hard,1,91,1,0
+S004,Recursion,Base Cases,Medium,1,25,2,0
+S004,Recursion,Recursive Calls,Medium,1,46,3,1
+S004,Recursion,Stack Overflow,Easy,0,18,4,2
+S004,Machine Learning,Supervised Learning,Easy,0,28,1,0
+S004,Machine Learning,Supervised Learning,Easy,1,20,2,0
+S004,Machine Learning,Supervised Learning,Medium,0,53,3,2
+S004,Machine Learning,Supervised Learning,Hard,0,50,4,0
+S004,Machine Learning,Supervised Learning,Medium,1,40,5,0
+S004,Data Structures,Arrays,Hard,1,77,1,0
+S004,Data Structures,Trees,Hard,0,47,2,2
+S004,Data Structures,Linked Lists,Medium,0,37,3,2
+S004,Data Structures,Linked Lists,Easy,0,13,4,1
+S004,Data Structures,Linked Lists,Medium,0,45,5,2
+S004,Data Structures,Linked Lists,Hard,1,51,6,0
+S004,Python Basics,Loops,Medium,1,43,1,1
+S004,Python Basics,Data Types,Easy,1,18,2,1
+S004,Python Basics,Functions,Hard,1,99,3,0
+S004,Python Basics,Data Types,Hard,1,79,4,0
+S004,Python Basics,Data Types,Medium,1,49,5,0
+S004,Decision Trees,Overfitting,Hard,0,59,1,2
+S004,Decision Trees,Entropy,Medium,0,37,2,1
+S004,Decision Trees,Overfitting,Hard,0,66,3,0
+S004,Decision Trees,Information Gain,Easy,0,7,4,2
+S004,Decision Trees,Overfitting,Hard,1,55,5,0
+S004,Decision Trees,Entropy,Medium,0,39,6,1
+S005,Recursion,Recursive Calls,Medium,1,50,1,0
+S005,Recursion,Recursive Calls,Medium,0,20,2,0
+S005,Recursion,Recursive Calls,Easy,1,21,3,0
+S005,Recursion,Stack Overflow,Easy,1,23,4,0
+S005,Recursion,Base Cases,Easy,1,18,5,0
+S005,Machine Learning,Model Evaluation,Medium,0,48,1,0
+S005,Machine Learning,Supervised Learning,Medium,1,54,2,1
+S005,Machine Learning,Model Evaluation,Hard,0,32,3,0
+S005,Machine Learning,Supervised Learning,Hard,0,97,4,0
+S005,Machine Learning,Supervised Learning,Hard,0,80,5,0
+S005,Machine Learning,Model Evaluation,Easy,1,13,6,0
+S005,Data Structures,Arrays,Hard,0,85,1,1
+S005,Data Structures,Arrays,Medium,0,40,2,1
+S005,Data Structures,Trees,Easy,1,18,3,2
+S005,Data Structures,Linked Lists,Medium,0,9,4,2
+S005,Data Structures,Linked Lists,Medium,0,42,5,1
+S005,Python Basics,Functions,Hard,0,57,1,1
+S005,Python Basics,Functions,Easy,0,16,2,1
+S005,Python Basics,Functions,Medium,0,52,3,2
+S005,Python Basics,Data Types,Medium,0,32,4,0
+S005,Decision Trees,Information Gain,Hard,0,63,1,1
+S005,Decision Trees,Overfitting,Hard,1,67,2,0
+S005,Decision Trees,Information Gain,Hard,1,56,3,0
+S005,Decision Trees,Overfitting,Medium,1,39,4,0
+S005,Decision Trees,Information Gain,Medium,1,29,5,0
+S005,Decision Trees,Information Gain,Easy,1,28,6,1
+S006,Recursion,Stack Overflow,Hard,0,55,1,2
+S006,Recursion,Stack Overflow,Medium,0,44,2,1
+S006,Recursion,Base Cases,Medium,1,31,3,0
+S006,Recursion,Recursive Calls,Easy,0,11,4,0
+S006,Recursion,Stack Overflow,Medium,1,33,5,1
+S006,Machine Learning,Unsupervised Learning,Medium,0,48,1,1
+S006,Machine Learning,Supervised Learning,Easy,0,19,2,0
+S006,Machine Learning,Model Evaluation,Hard,0,85,3,1
+S006,Machine Learning,Supervised Learning,Easy,1,28,4,0
+S006,Machine Learning,Model Evaluation,Hard,0,68,5,1
+S006,Machine Learning,Unsupervised Learning,Medium,0,54,6,1
+S006,Data Structures,Trees,Hard,0,73,1,0
+S006,Data Structures,Trees,Easy,1,19,2,0
+S006,Data Structures,Arrays,Hard,0,86,3,2
+S006,Data Structures,Linked Lists,Medium,1,40,4,1
+S006,Data Structures,Trees,Medium,1,40,5,0
+S006,Python Basics,Functions,Easy,1,24,1,0
+S006,Python Basics,Functions,Easy,1,22,2,0
+S006,Python Basics,Data Types,Medium,1,48,3,0
+S006,Python Basics,Functions,Hard,1,61,4,0
+S006,Decision Trees,Information Gain,Hard,1,89,1,0
+S006,Decision Trees,Entropy,Hard,0,22,2,1
+S006,Decision Trees,Overfitting,Easy,0,13,3,0
+S007,Recursion,Stack Overflow,Hard,1,53,1,0
+S007,Recursion,Recursive Calls,Easy,1,40,2,0
+S007,Recursion,Recursive Calls,Hard,1,75,3,0
+S007,Recursion,Stack Overflow,Medium,0,50,4,2
+S007,Recursion,Base Cases,Medium,1,39,5,0
+S007,Recursion,Stack Overflow,Easy,1,22,6,0
+S007,Machine Learning,Supervised Learning,Easy,1,14,1,0
+S007,Machine Learning,Supervised Learning,Easy,1,15,2,1
+S007,Machine Learning,Unsupervised Learning,Hard,0,92,3,0
+S007,Machine Learning,Model Evaluation,Easy,1,21,4,1
+S007,Machine Learning,Supervised Learning,Easy,0,25,5,0
+S007,Machine Learning,Model Evaluation,Easy,1,16,6,0
+S007,Data Structures,Linked Lists,Medium,0,40,1,1
+S007,Data Structures,Arrays,Hard,0,89,2,0
+S007,Data Structures,Arrays,Medium,0,46,3,2
+S007,Data Structures,Linked Lists,Easy,1,15,4,2
+S007,Data Structures,Trees,Hard,0,79,5,1
+S007,Python Basics,Data Types,Hard,1,84,1,0
+S007,Python Basics,Loops,Hard,1,36,2,0
+S007,Python Basics,Functions,Hard,1,90,3,0
+S007,Python Basics,Functions,Medium,0,44,4,0
+S007,Python Basics,Functions,Easy,1,11,5,0
+S007,Decision Trees,Entropy,Medium,1,41,1,0
+S007,Decision Trees,Entropy,Medium,0,38,2,1
+S007,Decision Trees,Information Gain,Hard,0,42,3,2
+S007,Decision Trees,Information Gain,Medium,0,21,4,1
+S007,Decision Trees,Overfitting,Easy,0,20,5,1
+S008,Recursion,Stack Overflow,Easy,1,29,1,0
+S008,Recursion,Recursive Calls,Easy,0,21,2,0
+S008,Recursion,Recursive Calls,Medium,1,37,3,2
+S008,Recursion,Recursive Calls,Hard,0,70,4,2
+S008,Machine Learning,Model Evaluation,Hard,1,75,1,0
+S008,Machine Learning,Supervised Learning,Easy,1,19,2,1
+S008,Machine Learning,Unsupervised Learning,Hard,0,79,3,0
+S008,Machine Learning,Unsupervised Learning,Medium,0,30,4,1
+S008,Machine Learning,Unsupervised Learning,Medium,1,69,5,0
+S008,Machine Learning,Unsupervised Learning,Easy,1,12,6,0
+S008,Data Structures,Arrays,Hard,0,53,1,0
+S008,Data Structures,Trees,Hard,0,107,2,1
+S008,Data Structures,Linked Lists,Easy,1,17,3,0
+S008,Data Structures,Trees,Easy,1,15,4,0
+S008,Data Structures,Arrays,Hard,1,36,5,0
+S008,Python Basics,Functions,Medium,1,35,1,0
+S008,Python Basics,Functions,Hard,1,72,2,2
+S008,Python Basics,Functions,Hard,1,63,3,0
+S008,Decision Trees,Information Gain,Hard,0,76,1,0
+S008,Decision Trees,Information Gain,Easy,1,31,2,0
+S008,Decision Trees,Information Gain,Hard,0,56,3,1
+S008,Decision Trees,Entropy,Medium,0,22,4,1
+S008,Decision Trees,Overfitting,Medium,0,45,5,1
+S008,Decision Trees,Entropy,Hard,1,104,6,0
+S009,Recursion,Stack Overflow,Easy,1,21,1,0
+S009,Recursion,Stack Overflow,Medium,0,42,2,0
+S009,Recursion,Recursive Calls,Medium,1,42,3,2
+S009,Recursion,Base Cases,Medium,1,30,4,0
+S009,Machine Learning,Model Evaluation,Hard,0,36,1,1
+S009,Machine Learning,Model Evaluation,Easy,0,9,2,1
+S009,Machine Learning,Supervised Learning,Hard,0,34,3,1
+S009,Machine Learning,Unsupervised Learning,Easy,0,27,4,2
+S009,Machine Learning,Model Evaluation,Medium,1,50,5,0
+S009,Machine Learning,Unsupervised Learning,Easy,0,14,6,0
+S009,Data Structures,Linked Lists,Easy,0,13,1,2
+S009,Data Structures,Arrays,Easy,0,12,2,0
+S009,Data Structures,Linked Lists,Easy,0,17,3,2
+S009,Python Basics,Functions,Easy,0,9,1,0
+S009,Python Basics,Data Types,Easy,1,17,2,0
+S009,Python Basics,Loops,Hard,0,67,3,1
+S009,Decision Trees,Overfitting,Easy,0,21,1,1
+S009,Decision Trees,Overfitting,Hard,0,17,2,0
+S009,Decision Trees,Overfitting,Hard,0,63,3,1
+S010,Recursion,Base Cases,Medium,0,34,1,1
+S010,Recursion,Base Cases,Easy,1,21,2,0
+S010,Recursion,Recursive Calls,Hard,0,48,3,2
+S010,Machine Learning,Unsupervised Learning,Hard,0,59,1,0
+S010,Machine Learning,Model Evaluation,Easy,0,14,2,0
+S010,Machine Learning,Unsupervised Learning,Medium,0,23,3,1
+S010,Machine Learning,Unsupervised Learning,Medium,0,38,4,1
+S010,Machine Learning,Model Evaluation,Medium,0,29,5,0
+S010,Data Structures,Arrays,Easy,0,22,1,1
+S010,Data Structures,Arrays,Hard,1,69,2,0
+S010,Data Structures,Trees,Medium,0,19,3,1
+S010,Data Structures,Trees,Easy,0,26,4,2
+S010,Data Structures,Linked Lists,Medium,1,33,5,0
+S010,Data Structures,Arrays,Medium,0,39,6,1
+S010,Python Basics,Functions,Hard,1,42,1,0
+S010,Python Basics,Data Types,Hard,0,75,2,2
+S010,Python Basics,Loops,Hard,0,72,3,0
+S010,Decision Trees,Overfitting,Medium,0,31,1,1
+S010,Decision Trees,Entropy,Easy,0,14,2,0
+S010,Decision Trees,Overfitting,Hard,0,57,3,0
+S010,Decision Trees,Overfitting,Hard,0,49,4,1
+S010,Decision Trees,Information Gain,Hard,0,73,5,2
+S011,Recursion,Base Cases,Easy,1,13,1,1
+S011,Recursion,Recursive Calls,Hard,0,45,2,1
+S011,Recursion,Base Cases,Hard,1,50,3,0
+S011,Machine Learning,Model Evaluation,Hard,0,71,1,0
+S011,Machine Learning,Unsupervised Learning,Hard,1,78,2,0
+S011,Machine Learning,Unsupervised Learning,Medium,0,67,3,0
+S011,Machine Learning,Unsupervised Learning,Hard,0,81,4,0
+S011,Machine Learning,Model Evaluation,Hard,0,82,5,1
+S011,Machine Learning,Supervised Learning,Medium,0,42,6,0
+S011,Data Structures,Trees,Medium,0,40,1,1
+S011,Data Structures,Linked Lists,Easy,0,23,2,2
+S011,Data Structures,Linked Lists,Hard,0,62,3,0
+S011,Data Structures,Linked Lists,Easy,1,13,4,0
+S011,Data Structures,Linked Lists,Hard,0,52,5,1
+S011,Python Basics,Loops,Hard,0,52,1,1
+S011,Python Basics,Functions,Hard,0,62,2,0
+S011,Python Basics,Loops,Easy,1,22,3,0
+S011,Python Basics,Data Types,Easy,1,27,4,0
+S011,Decision Trees,Information Gain,Hard,0,22,1,2
+S011,Decision Trees,Overfitting,Hard,0,78,2,1
+S011,Decision Trees,Overfitting,Medium,1,51,3,0
+S011,Decision Trees,Information Gain,Hard,1,73,4,0
+S011,Decision Trees,Information Gain,Medium,1,61,5,0
+S011,Decision Trees,Overfitting,Hard,0,77,6,1
+S012,Recursion,Recursive Calls,Hard,0,55,1,0
+S012,Recursion,Base Cases,Medium,1,52,2,0
+S012,Recursion,Recursive Calls,Hard,1,61,3,0
+S012,Machine Learning,Model Evaluation,Hard,0,60,1,1
+S012,Machine Learning,Unsupervised Learning,Medium,0,42,2,0
+S012,Machine Learning,Model Evaluation,Hard,0,35,3,1
+S012,Machine Learning,Supervised Learning,Hard,0,58,4,2
+S012,Machine Learning,Supervised Learning,Medium,1,58,5,0
+S012,Machine Learning,Unsupervised Learning,Medium,0,36,6,2
+S012,Data Structures,Linked Lists,Hard,1,46,1,0
+S012,Data Structures,Arrays,Hard,0,128,2,2
+S012,Data Structures,Arrays,Hard,0,43,3,2
+S012,Python Basics,Loops,Medium,0,50,1,1
+S012,Python Basics,Loops,Easy,0,18,2,0
+S012,Python Basics,Loops,Medium,0,56,3,2
+S012,Python Basics,Loops,Hard,0,84,4,2
+S012,Python Basics,Loops,Hard,0,84,5,2
+S012,Decision Trees,Overfitting,Medium,1,59,1,0
+S012,Decision Trees,Overfitting,Easy,0,12,2,1
+S012,Decision Trees,Entropy,Hard,0,44,3,1
+S012,Decision Trees,Entropy,Medium,0,28,4,1
+S013,Recursion,Stack Overflow,Hard,1,56,1,0
+S013,Recursion,Stack Overflow,Easy,1,26,2,0
+S013,Recursion,Base Cases,Hard,0,72,3,0
+S013,Recursion,Recursive Calls,Easy,1,18,4,1
+S013,Recursion,Base Cases,Easy,1,32,5,0
+S013,Recursion,Base Cases,Medium,1,31,6,0
+S013,Machine Learning,Supervised Learning,Easy,1,19,1,1
+S013,Machine Learning,Supervised Learning,Easy,1,25,2,0
+S013,Machine Learning,Model Evaluation,Medium,1,33,3,0
+S013,Machine Learning,Supervised Learning,Medium,1,56,4,0
+S013,Machine Learning,Unsupervised Learning,Easy,0,31,5,0
+S013,Data Structures,Arrays,Easy,1,14,1,1
+S013,Data Structures,Trees,Hard,1,44,2,0
+S013,Data Structures,Arrays,Hard,1,40,3,1
+S013,Data Structures,Arrays,Hard,0,76,4,2
+S013,Data Structures,Linked Lists,Easy,0,9,5,2
+S013,Python Basics,Functions,Medium,1,34,1,0
+S013,Python Basics,Functions,Medium,0,37,2,0
+S013,Python Basics,Data Types,Hard,0,70,3,2
+S013,Decision Trees,Entropy,Easy,1,15,1,0
+S013,Decision Trees,Overfitting,Medium,0,54,2,1
+S013,Decision Trees,Overfitting,Easy,1,29,3,0
+S013,Decision Trees,Information Gain,Easy,1,24,4,0
+S013,Decision Trees,Information Gain,Medium,1,54,5,0
+S014,Recursion,Recursive Calls,Easy,0,19,1,1
+S014,Recursion,Recursive Calls,Easy,0,14,2,1
+S014,Recursion,Recursive Calls,Medium,0,44,3,1
+S014,Recursion,Stack Overflow,Medium,1,42,4,1
+S014,Recursion,Base Cases,Medium,1,30,5,0
+S014,Machine Learning,Unsupervised Learning,Easy,1,17,1,0
+S014,Machine Learning,Unsupervised Learning,Easy,0,15,2,1
+S014,Machine Learning,Unsupervised Learning,Easy,0,27,3,1
+S014,Machine Learning,Unsupervised Learning,Hard,0,50,4,0
+S014,Machine Learning,Supervised Learning,Hard,0,42,5,0
+S014,Data Structures,Arrays,Hard,0,91,1,1
+S014,Data Structures,Arrays,Easy,1,21,2,0
+S014,Data Structures,Trees,Easy,0,14,3,1
+S014,Python Basics,Functions,Medium,0,26,1,1
+S014,Python Basics,Functions,Hard,0,54,2,0
+S014,Python Basics,Loops,Hard,0,22,3,0
+S014,Python Basics,Functions,Medium,0,37,4,0
+S014,Python Basics,Data Types,Medium,0,48,5,0
+S014,Decision Trees,Information Gain,Easy,0,19,1,1
+S014,Decision Trees,Entropy,Hard,0,93,2,0
+S014,Decision Trees,Overfitting,Hard,0,62,3,1
+S015,Recursion,Stack Overflow,Hard,0,42,1,2
+S015,Recursion,Base Cases,Easy,0,11,2,0
+S015,Recursion,Base Cases,Medium,1,29,3,0
+S015,Recursion,Stack Overflow,Easy,0,18,4,0
+S015,Machine Learning,Unsupervised Learning,Medium,0,37,1,1
+S015,Machine Learning,Model Evaluation,Easy,1,12,2,0
+S015,Machine Learning,Supervised Learning,Medium,1,33,3,0
+S015,Data Structures,Arrays,Medium,1,39,1,0
+S015,Data Structures,Arrays,Hard,1,73,2,0
+S015,Data Structures,Linked Lists,Hard,0,79,3,0
+S015,Data Structures,Linked Lists,Easy,1,17,4,0
+S015,Python Basics,Data Types,Hard,0,61,1,2
+S015,Python Basics,Loops,Easy,0,18,2,2
+S015,Python Basics,Loops,Easy,1,11,3,0
+S015,Decision Trees,Overfitting,Easy,0,12,1,1
+S015,Decision Trees,Overfitting,Hard,1,78,2,0
+S015,Decision Trees,Information Gain,Easy,0,17,3,0
+S015,Decision Trees,Overfitting,Easy,1,15,4,0
+S015,Decision Trees,Information Gain,Easy,1,27,5,0
+S016,Recursion,Recursive Calls,Easy,0,29,1,2
+S016,Recursion,Stack Overflow,Easy,1,15,2,0
+S016,Recursion,Base Cases,Medium,0,41,3,2
+S016,Recursion,Recursive Calls,Easy,0,28,4,2
+S016,Recursion,Stack Overflow,Medium,1,27,5,2
+S016,Machine Learning,Unsupervised Learning,Medium,1,50,1,0
+S016,Machine Learning,Supervised Learning,Easy,1,23,2,1
+S016,Machine Learning,Unsupervised Learning,Hard,0,52,3,2
+S016,Machine Learning,Supervised Learning,Easy,1,14,4,0
+S016,Machine Learning,Model Evaluation,Medium,0,31,5,2
+S016,Machine Learning,Model Evaluation,Easy,1,24,6,1
+S016,Data Structures,Trees,Medium,0,28,1,0
+S016,Data Structures,Arrays,Medium,1,28,2,0
+S016,Data Structures,Trees,Medium,0,44,3,2
+S016,Data Structures,Arrays,Easy,1,26,4,0
+S016,Data Structures,Linked Lists,Hard,0,46,5,1
+S016,Data Structures,Trees,Medium,1,31,6,0
+S016,Python Basics,Data Types,Medium,0,26,1,2
+S016,Python Basics,Functions,Medium,0,39,2,1
+S016,Python Basics,Functions,Hard,0,50,3,0
+S016,Python Basics,Data Types,Medium,0,45,4,2
+S016,Python Basics,Data Types,Easy,0,16,5,2
+S016,Decision Trees,Entropy,Hard,0,59,1,2
+S016,Decision Trees,Overfitting,Easy,1,14,2,0
+S016,Decision Trees,Entropy,Medium,0,44,3,2
+S016,Decision Trees,Information Gain,Hard,0,58,4,2
+S016,Decision Trees,Information Gain,Hard,0,42,5,1
+S016,Decision Trees,Information Gain,Easy,0,12,6,1
+S017,Recursion,Base Cases,Easy,1,18,1,1
+S017,Recursion,Recursive Calls,Hard,1,60,2,0
+S017,Recursion,Stack Overflow,Medium,1,29,3,0
+S017,Recursion,Stack Overflow,Medium,0,31,4,0
+S017,Recursion,Recursive Calls,Easy,1,23,5,0
+S017,Recursion,Recursive Calls,Medium,0,39,6,2
+S017,Machine Learning,Model Evaluation,Hard,0,51,1,0
+S017,Machine Learning,Model Evaluation,Hard,0,66,2,2
+S017,Machine Learning,Supervised Learning,Hard,0,93,3,0
+S017,Machine Learning,Unsupervised Learning,Medium,0,56,4,0
+S017,Machine Learning,Model Evaluation,Easy,0,26,5,1
+S017,Data Structures,Trees,Easy,0,18,1,0
+S017,Data Structures,Arrays,Hard,0,80,2,2
+S017,Data Structures,Trees,Hard,0,107,3,1
+S017,Data Structures,Arrays,Easy,0,23,4,1
+S017,Data Structures,Linked Lists,Easy,0,33,5,0
+S017,Data Structures,Arrays,Medium,0,33,6,0
+S017,Python Basics,Functions,Medium,0,26,1,0
+S017,Python Basics,Data Types,Medium,1,36,2,0
+S017,Python Basics,Functions,Easy,1,14,3,1
+S017,Python Basics,Functions,Hard,0,40,4,0
+S017,Python Basics,Loops,Hard,0,94,5,2
+S017,Decision Trees,Entropy,Medium,0,26,1,0
+S017,Decision Trees,Entropy,Medium,1,40,2,1
+S017,Decision Trees,Information Gain,Medium,0,49,3,2
+S017,Decision Trees,Entropy,Medium,0,38,4,0
+S017,Decision Trees,Information Gain,Medium,1,35,5,0
+S018,Recursion,Stack Overflow,Easy,0,25,1,0
+S018,Recursion,Base Cases,Easy,0,17,2,1
+S018,Recursion,Stack Overflow,Hard,0,52,3,2
+S018,Recursion,Stack Overflow,Easy,0,7,4,2
+S018,Recursion,Base Cases,Hard,0,62,5,2
+S018,Machine Learning,Supervised Learning,Hard,0,57,1,0
+S018,Machine Learning,Model Evaluation,Hard,1,53,2,0
+S018,Machine Learning,Model Evaluation,Hard,1,85,3,0
+S018,Data Structures,Arrays,Medium,1,26,1,0
+S018,Data Structures,Trees,Medium,0,47,2,1
+S018,Data Structures,Linked Lists,Easy,0,18,3,1
+S018,Data Structures,Trees,Easy,1,19,4,0
+S018,Data Structures,Linked Lists,Easy,1,21,5,0
+S018,Data Structures,Trees,Hard,0,74,6,1
+S018,Python Basics,Functions,Medium,0,32,1,2
+S018,Python Basics,Loops,Hard,0,38,2,0
+S018,Python Basics,Loops,Hard,0,102,3,0
+S018,Python Basics,Loops,Medium,0,63,4,2
+S018,Python Basics,Functions,Hard,0,67,5,0
+S018,Python Basics,Functions,Easy,0,26,6,0
+S018,Decision Trees,Overfitting,Medium,0,63,1,0
+S018,Decision Trees,Entropy,Easy,1,15,2,2
+S018,Decision Trees,Overfitting,Hard,0,65,3,1
+S019,Recursion,Stack Overflow,Easy,0,21,1,0
+S019,Recursion,Base Cases,Hard,0,69,2,2
+S019,Recursion,Recursive Calls,Hard,0,108,3,1
+S019,Recursion,Base Cases,Medium,0,54,4,1
+S019,Machine Learning,Unsupervised Learning,Easy,1,19,1,0
+S019,Machine Learning,Model Evaluation,Easy,1,13,2,0
+S019,Machine Learning,Model Evaluation,Hard,0,75,3,2
+S019,Machine Learning,Unsupervised Learning,Hard,0,76,4,2
+S019,Machine Learning,Unsupervised Learning,Easy,0,24,5,1
+S019,Data Structures,Linked Lists,Easy,1,27,1,0
+S019,Data Structures,Linked Lists,Easy,1,18,2,1
+S019,Data Structures,Linked Lists,Easy,1,20,3,0
+S019,Data Structures,Trees,Hard,1,59,4,2
+S019,Python Basics,Functions,Easy,0,12,1,0
+S019,Python Basics,Loops,Easy,0,33,2,0
+S019,Python Basics,Data Types,Medium,0,33,3,1
+S019,Python Basics,Loops,Hard,0,36,4,1
+S019,Decision Trees,Information Gain,Hard,0,58,1,1
+S019,Decision Trees,Information Gain,Easy,0,25,2,1
+S019,Decision Trees,Information Gain,Easy,0,13,3,0
+S019,Decision Trees,Overfitting,Easy,1,23,4,0
+S019,Decision Trees,Overfitting,Hard,0,61,5,0
+S019,Decision Trees,Information Gain,Hard,0,77,6,1
+S020,Recursion,Recursive Calls,Medium,0,31,1,0
+S020,Recursion,Stack Overflow,Medium,1,29,2,0
+S020,Recursion,Recursive Calls,Easy,0,11,3,0
+S020,Recursion,Stack Overflow,Easy,0,17,4,0
+S020,Recursion,Stack Overflow,Easy,0,10,5,0
+S020,Machine Learning,Model Evaluation,Easy,1,26,1,0
+S020,Machine Learning,Unsupervised Learning,Easy,1,15,2,0
+S020,Machine Learning,Unsupervised Learning,Easy,1,12,3,0
+S020,Data Structures,Arrays,Hard,0,49,1,2
+S020,Data Structures,Trees,Hard,0,61,2,0
+S020,Data Structures,Arrays,Easy,1,20,3,1
+S020,Python Basics,Functions,Easy,1,28,1,0
+S020,Python Basics,Data Types,Easy,0,21,2,0
+S020,Python Basics,Data Types,Hard,0,94,3,0
+S020,Python Basics,Functions,Medium,1,23,4,0
+S020,Python Basics,Loops,Medium,0,42,5,1
+S020,Decision Trees,Overfitting,Easy,1,27,1,0
+S020,Decision Trees,Information Gain,Easy,0,14,2,1
+S020,Decision Trees,Overfitting,Hard,0,81,3,0
