@@ -57,6 +57,9 @@ mountRoute("/api/question-report", "./routes/questionReport.routes");
 mountRoute("/api/question-reports", "./routes/questionReport.routes");
 mountRoute("/api/why-stuck", "./routes/whyStuck.routes");
 mountRoute("/api/leaderboard", "./routes/leaderboard.routes");
+mountRoute("/api/career", "./routes/career.routes");
+mountRoute("/api/performance", "./routes/performance.routes");
+mountRoute("/api/quiz", "./routes/quiz.routes");
 
 // 5. Login check for the in-file user endpoints.
 const requireAuth = require("./middleware/auth.middleware");
